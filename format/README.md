@@ -234,6 +234,13 @@ pyright type-checked it against 3.14.
    `partial`. **For now** the format has a `partial` status and the example answers QA.07 `partial`
    with a CTR explanation. If the decision goes another way, `partial` can stay for other controls
    or be removed in the next schema version.
+   *CRA-Expert:* we need a distinct questionnaire we can give to PMCs so they can self-answer 
+   to some value that will be accurate enough for this CRA point.
+3. **Who Contacts AU.02 later?** Are there any cases where the PMC chair or release manager
+   would ever be contacted about past attestations?  If so, how?  Potential recommendations:
+   - Make contact.email required, and always a role address (private@project.a.o?).
+   - Add ASF contact to AU.01 for authority requests, a role alias owned by VP Legal or VP Security.
+   - Keep a stable apache.org page that maps any past attestation to its current chair.
 
 ## Next tasks
 
