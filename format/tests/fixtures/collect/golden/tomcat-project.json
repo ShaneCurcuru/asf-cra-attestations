@@ -1,0 +1,117 @@
+{
+  "description": "Draft written by vsa-collect. Review every value and answer the controls the report lists.",
+  "project": {
+    "name": "Apache Tomcat",
+    "url": "https://tomcat.apache.org/"
+  },
+  "pmc": "Apache Tomcat PMC",
+  "contact": {
+    "name": "Christopher Schultz",
+    "role": "Vice President, Apache Tomcat",
+    "email": "private@tomcat.apache.org"
+  },
+  "vcs": {
+    "type": "git",
+    "url": "https://gitbox.apache.org/repos/asf/tomcat.git"
+  },
+  "keysUri": "https://downloads.apache.org/tomcat/tomcat-11/KEYS",
+  "controls": {
+    "GV.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/tomcat/blob/11.0.27/CONTRIBUTING.md"
+        }
+      ]
+    },
+    "GV.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://tomcat.apache.org/"
+        },
+        {
+          "uri": "https://github.com/apache/tomcat/blob/11.0.27/README.md"
+        }
+      ]
+    },
+    "LE.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/tomcat/blob/11.0.27/LICENSE",
+          "description": "Apache License 2.0"
+        }
+      ]
+    },
+    "QA.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://gitbox.apache.org/repos/asf/tomcat.git"
+        },
+        {
+          "uri": "https://github.com/apache/tomcat"
+        }
+      ]
+    },
+    "QA.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/tomcat/blob/11.0.27/SECURITY.md"
+        },
+        {
+          "uri": "https://www.apache.org/security/"
+        }
+      ]
+    },
+    "QA.04": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/tomcat/tree/11.0.27/.github/workflows",
+          "description": "Automated builds and tests are configured in 1 CI file(s)."
+        }
+      ]
+    },
+    "QA.05": {
+      "status": "not_applicable",
+      "explanation": "Written in Java, a memory-safe language, according to projects.json."
+    },
+    "QA.06": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://projects.apache.org/committee.html?tomcat",
+          "description": "PMC of 29 members."
+        }
+      ]
+    },
+    "BR.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/tomcat/blob/11.0.27/BUILDING.txt"
+        }
+      ]
+    },
+    "BR.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://tomcat.apache.org/",
+          "description": "3 releases listed in projects.json, each with a distinct version."
+        }
+      ]
+    },
+    "BR.04": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/tomcat/blob/11.0.27/RELEASE-NOTES"
+        }
+      ]
+    }
+  }
+}

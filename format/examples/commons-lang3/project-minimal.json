@@ -1,0 +1,88 @@
+{
+  "description": "Per-project inputs for a PMC that has opted out. ILLUSTRATIVE: Apache Commons has not opted out; this shows the minimal format on real release files.",
+  "project": {
+    "name": "Apache Commons Lang",
+    "url": "https://commons.apache.org/proper/commons-lang/",
+    "purl": "pkg:maven/org.apache.commons/commons-lang3"
+  },
+  "pmc": "Apache Commons PMC",
+  "contact": {
+    "name": "Example PMC Chair",
+    "role": "Vice President, Apache Commons (PMC Chair)",
+    "email": "private@commons.apache.org"
+  },
+  "vcs": {
+    "type": "git",
+    "url": "https://gitbox.apache.org/repos/asf/commons-lang.git"
+  },
+  "keysUri": "https://downloads.apache.org/commons/KEYS",
+  "controls": {
+    "LE.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/LICENSE.txt",
+          "description": "Apache License 2.0"
+        }
+      ]
+    },
+    "QA.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://gitbox.apache.org/repos/asf/commons-lang.git"
+        },
+        {
+          "uri": "https://github.com/apache/commons-lang"
+        }
+      ]
+    },
+    "QA.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/security.html"
+        },
+        {
+          "uri": "https://www.apache.org/security/"
+        }
+      ]
+    },
+    "QA.06": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/proper/commons-lang/team.html"
+        }
+      ]
+    },
+    "BR.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://archive.apache.org/dist/commons/lang/",
+          "description": "Complete release history."
+        }
+      ]
+    },
+    "BR.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/info/verification.html"
+        },
+        {
+          "uri": "https://downloads.apache.org/commons/KEYS"
+        }
+      ]
+    }
+  },
+  "attestation": {
+    "mode": "minimal",
+    "reason": "no-commercial-use",
+    "statement": "Illustrative statement: this PMC does not expect commercial use of the project and has chosen not to complete the full checklist.",
+    "decided": "2026-09-01",
+    "decisionRef": "https://lists.apache.org/list.html?dev@commons.apache.org",
+    "reviewBy": "2027-09-01"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "version": "3.17.0",
+  "releaseDate": "2024-08-29",
+  "tag": "rel/commons-lang-3.17.0",
+  "issued": "2026-10-15T00:00:00Z",
+  "artifacts": [
+    {
+      "id": "commons-lang3-src.tar.gz",
+      "name": "commons-lang3-3.17.0-src.tar.gz",
+      "role": "source",
+      "official": true,
+      "uri": "https://archive.apache.org/dist/commons/lang/source/commons-lang3-3.17.0-src.tar.gz",
+      "signatureUri": "https://archive.apache.org/dist/commons/lang/source/commons-lang3-3.17.0-src.tar.gz.asc"
+    },
+    {
+      "id": "commons-lang3-src.zip",
+      "name": "commons-lang3-3.17.0-src.zip",
+      "role": "source",
+      "official": true,
+      "uri": "https://archive.apache.org/dist/commons/lang/source/commons-lang3-3.17.0-src.zip",
+      "signatureUri": "https://archive.apache.org/dist/commons/lang/source/commons-lang3-3.17.0-src.zip.asc"
+    },
+    {
+      "id": "commons-lang3-javadoc.jar",
+      "name": "commons-lang3-3.17.0-javadoc.jar",
+      "role": "documentation",
+      "official": false,
+      "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-javadoc.jar",
+      "signatureUri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-javadoc.jar.asc"
+    },
+    {
+      "id": "commons-lang3-sources.jar",
+      "name": "commons-lang3-3.17.0-sources.jar",
+      "role": "source",
+      "official": false,
+      "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-sources.jar",
+      "signatureUri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-sources.jar.asc"
+    },
+    {
+      "id": "commons-lang3-test-sources.jar",
+      "name": "commons-lang3-3.17.0-test-sources.jar",
+      "role": "source",
+      "official": false,
+      "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-test-sources.jar",
+      "signatureUri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-test-sources.jar.asc"
+    },
+    {
+      "id": "commons-lang3-tests.jar",
+      "name": "commons-lang3-3.17.0-tests.jar",
+      "role": "binary",
+      "official": false,
+      "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-tests.jar",
+      "signatureUri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-tests.jar.asc"
+    },
+    {
+      "id": "commons-lang3.jar",
+      "name": "commons-lang3-3.17.0.jar",
+      "role": "binary",
+      "official": false,
+      "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+      "signatureUri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar.asc",
+      "sbomRefs": [
+        "commons-lang3-cyclonedx.json",
+        "commons-lang3.spdx.json"
+      ]
+    }
+  ],
+  "sboms": [
+    {
+      "id": "commons-lang3-cyclonedx.json",
+      "format": "CycloneDX",
+      "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-cyclonedx.json",
+      "signatureUri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-cyclonedx.json.asc"
+    },
+    {
+      "id": "commons-lang3.spdx.json",
+      "format": "SPDX",
+      "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.spdx.json",
+      "signatureUri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.spdx.json.asc"
+    }
+  ]
+}

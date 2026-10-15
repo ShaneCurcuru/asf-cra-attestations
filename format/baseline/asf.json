@@ -1,0 +1,62 @@
+{
+  "description": "ASF-wide inputs shared by every PMC. A project file may replace any control here.",
+  "template": {
+    "id": "orcwg-vsa-lite",
+    "version": "0.1",
+    "uri": "https://github.com/orcwg/cra-attestations/blob/main/proposals/template-lite.md",
+    "basis": "BSI TR-03185-2"
+  },
+  "issuer": {
+    "name": "The Apache Software Foundation",
+    "registeredAddress": "1000 N West Street, Suite 1200, Wilmington, DE 19801, U.S.A.",
+    "website": "https://www.apache.org/",
+    "role": "steward",
+    "relationship": "{project} is governed by the {pmc}, a committee of the ASF Board. Releases are approved by PMC vote under ASF release policy."
+  },
+  "controls": {
+    "LE.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/legal/resolved.html",
+          "description": "ASF third-party licensing policy applies to every release."
+        }
+      ]
+    },
+    "QA.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/security/"
+        }
+      ]
+    },
+    "BR.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/info/verification.html"
+        }
+      ]
+    },
+    "VM.01": {
+      "status": "met",
+      "contact": "mailto:security@apache.org",
+      "privateReportingUri": "https://www.apache.org/security/",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/security/"
+        }
+      ]
+    },
+    "VM.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/security/committers.html",
+          "description": "ASF vulnerability handling process: CVE assignment, coordinated disclosure, public announcement."
+        }
+      ]
+    }
+  }
+}

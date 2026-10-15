@@ -1,0 +1,10 @@
+{
+  "name": "java",
+  "description": "ILLUSTRATIVE community baseline for ASF projects written only in JVM languages. It is layered on baseline/asf.json and below each project's answers. No group of PMCs has agreed to it yet.",
+  "controls": {
+    "QA.05": {
+      "status": "not_applicable",
+      "explanation": "Written only in Java, a memory-safe language running on the JVM; no code in non-memory-safe languages."
+    }
+  }
+}

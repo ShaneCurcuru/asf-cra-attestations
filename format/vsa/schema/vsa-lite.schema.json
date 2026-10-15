@@ -1,0 +1,805 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tooling.apache.org/cra/vsa-lite/0.3.0/vsa-lite.schema.json",
+  "title": "Light-weight Voluntary Security Attestation (VSA-lite)",
+  "description": "Machine-readable form of the ORC WG Tier 1 checklist (orcwg/cra-attestations proposals/template-lite.md v0.1, derived from BSI TR-03185-2). One document attests to one release of one project and binds that attestation to the release's artifacts by cryptographic digest, detached signature and SBOM. AU.01-AU.03 are carried by the issuer, contact and subject objects; GV/LE/QA/BR/VM/EL items are carried in controls.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "template",
+    "attestationId",
+    "scope",
+    "issued",
+    "issuer",
+    "contact",
+    "subject",
+    "controls"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "schemaVersion": {
+      "description": "Version of this schema the document conforms to.",
+      "const": "0.3.0"
+    },
+    "template": {
+      "description": "The human-readable checklist this document instantiates.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ],
+      "properties": {
+        "id": {
+          "const": "orcwg-vsa-lite"
+        },
+        "version": {
+          "type": "string",
+          "examples": [
+            "0.1"
+          ]
+        },
+        "uri": {
+          "$ref": "#/$defs/httpsUri"
+        },
+        "basis": {
+          "type": "string",
+          "examples": [
+            "BSI TR-03185-2"
+          ]
+        }
+      }
+    },
+    "attestationId": {
+      "description": "Globally unique, stable identifier for this attestation document.",
+      "type": "string",
+      "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "scope": {
+      "description": "'full' when the PMC answered the checklist. 'minimal' when the PMC opted out: only automatically derived controls are answered, every other control is 'not_assessed', and optOut says why.",
+      "enum": [
+        "full",
+        "minimal"
+      ]
+    },
+    "optOut": {
+      "$ref": "#/$defs/optOut"
+    },
+    "issued": {
+      "description": "When the attestation was issued (RFC 3339).",
+      "type": "string",
+      "format": "date-time"
+    },
+    "validUntil": {
+      "description": "Optional date after which the issuer no longer stands behind the attestation (e.g. end of support for this release line).",
+      "type": "string",
+      "format": "date-time"
+    },
+    "supersedes": {
+      "description": "attestationId values this document replaces (e.g. a corrected re-issue).",
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/attestationId"
+      },
+      "uniqueItems": true
+    },
+    "comment": {
+      "description": "Free-text note from the issuer. Not interpreted by tooling.",
+      "type": "string"
+    },
+    "issuer": {
+      "$ref": "#/$defs/issuer"
+    },
+    "contact": {
+      "$ref": "#/$defs/contact"
+    },
+    "subject": {
+      "$ref": "#/$defs/subject"
+    },
+    "controls": {
+      "$ref": "#/$defs/controls"
+    }
+  },
+  "$defs": {
+    "httpsUri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "mailtoOrHttpsUri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^(https://|mailto:)"
+    },
+    "localId": {
+      "description": "Document-local identifier used to cross-reference artifacts and SBOMs.",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "issuer": {
+      "description": "AU.01: the legal entity issuing the attestation and its relationship to the project.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "registeredAddress",
+        "website",
+        "role"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "registeredAddress": {
+          "type": "string",
+          "minLength": 1
+        },
+        "website": {
+          "$ref": "#/$defs/httpsUri"
+        },
+        "role": {
+          "description": "Issuer's relationship to the project, using CRA terms. 'steward' = open-source software steward (CRA Art. 3(14)); 'maintainer' = the project itself; 'third-party' = unaffiliated assessor.",
+          "enum": [
+            "steward",
+            "maintainer",
+            "third-party"
+          ]
+        },
+        "relationship": {
+          "description": "Free-text explanation of the relationship (e.g. the PMC that governs the project).",
+          "type": "string"
+        }
+      }
+    },
+    "contact": {
+      "description": "AU.02: the person issuing the attestation on the issuer's behalf, and their role. For the ASF this is the PMC chair, as the official representative of the PMC.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "role"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        }
+      }
+    },
+    "subject": {
+      "description": "AU.03: the project and the exact release the attestation applies to, bound to its artifacts.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project",
+        "release",
+        "artifacts"
+      ],
+      "properties": {
+        "project": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "url"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "url": {
+              "$ref": "#/$defs/httpsUri"
+            },
+            "purl": {
+              "description": "Package URL for the project's primary package, without version.",
+              "type": "string",
+              "pattern": "^pkg:"
+            }
+          }
+        },
+        "release": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version"
+          ],
+          "properties": {
+            "version": {
+              "description": "The single version this attestation is valid for. One document per release.",
+              "type": "string",
+              "minLength": 1
+            },
+            "releaseDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "announcement": {
+              "$ref": "#/$defs/httpsUri"
+            },
+            "vcs": {
+              "description": "Where the released source came from. A commit ID is strongly recommended because tags can move.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "url"
+              ],
+              "properties": {
+                "type": {
+                  "enum": [
+                    "git",
+                    "svn"
+                  ]
+                },
+                "url": {
+                  "$ref": "#/$defs/httpsUri"
+                },
+                "tag": {
+                  "type": "string"
+                },
+                "commit": {
+                  "type": "string",
+                  "pattern": "^([0-9a-f]{40}|[0-9a-f]{64}|r?[0-9]+)$"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": [
+                    "tag"
+                  ]
+                },
+                {
+                  "required": [
+                    "commit"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "artifacts": {
+          "description": "Every released file the attestation covers. Tooling matches a downloaded file to this attestation by digest.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/artifact"
+          }
+        },
+        "sboms": {
+          "description": "SBOMs describing the artifacts. Referenced from artifact.sbomRefs and from QA.01 evidence.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sbom"
+          }
+        }
+      }
+    },
+    "digests": {
+      "description": "Cryptographic digests, lowercase hex, keyed by algorithm (in-toto DigestSet names). MD5 and SHA-1 are deliberately not allowed.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "sha384": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{96}$"
+        },
+        "sha512": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{128}$"
+        },
+        "sha3-256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "sha3-512": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{128}$"
+        }
+      }
+    },
+    "signature": {
+      "description": "A detached signature over the file it is attached to.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "uri"
+      ],
+      "properties": {
+        "format": {
+          "enum": [
+            "openpgp",
+            "sigstore-bundle",
+            "cms"
+          ]
+        },
+        "uri": {
+          "$ref": "#/$defs/httpsUri"
+        },
+        "keyFingerprint": {
+          "description": "Full OpenPGP v4 (40 hex) or v5/v6 (64 hex) fingerprint, uppercase, no spaces.",
+          "type": "string",
+          "pattern": "^([0-9A-F]{40}|[0-9A-F]{64})$"
+        },
+        "keysUri": {
+          "description": "Where verifiers obtain the public key(s), e.g. the project's KEYS file.",
+          "$ref": "#/$defs/httpsUri"
+        },
+        "identity": {
+          "description": "For sigstore: the expected certificate identity (e.g. workflow URI or email).",
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "openpgp"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "keyFingerprint",
+              "keysUri"
+            ]
+          }
+        }
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "role",
+        "uri",
+        "digests"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/localId"
+        },
+        "name": {
+          "description": "File name as distributed.",
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "description": "'source' = the source release (for the ASF, the official act of release); 'binary' = compiled or packaged output.",
+          "enum": [
+            "source",
+            "binary",
+            "documentation",
+            "other"
+          ]
+        },
+        "official": {
+          "description": "True if the issuer treats this artifact as an official release (ASF: source packages voted on by the PMC). False for convenience binaries.",
+          "type": "boolean"
+        },
+        "uri": {
+          "$ref": "#/$defs/httpsUri"
+        },
+        "purl": {
+          "type": "string",
+          "pattern": "^pkg:"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "digests": {
+          "$ref": "#/$defs/digests"
+        },
+        "signature": {
+          "$ref": "#/$defs/signature"
+        },
+        "sbomRefs": {
+          "description": "ids of entries in subject.sboms that describe this artifact.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localId"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "sbom": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "format",
+        "uri",
+        "digests"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/localId"
+        },
+        "format": {
+          "enum": [
+            "CycloneDX",
+            "SPDX"
+          ]
+        },
+        "specVersion": {
+          "type": "string",
+          "examples": [
+            "1.5",
+            "2.3",
+            "3.0"
+          ]
+        },
+        "mediaType": {
+          "type": "string",
+          "examples": [
+            "application/vnd.cyclonedx+json",
+            "application/spdx+json"
+          ]
+        },
+        "serialNumber": {
+          "description": "CycloneDX serialNumber or SPDX documentNamespace, so the SBOM can be matched without downloading.",
+          "type": "string"
+        },
+        "uri": {
+          "$ref": "#/$defs/httpsUri"
+        },
+        "digests": {
+          "$ref": "#/$defs/digests"
+        },
+        "signature": {
+          "$ref": "#/$defs/signature"
+        }
+      }
+    },
+    "evidence": {
+      "description": "A pointer to where the claim can be checked. Either a URI, a reference to an artifact or SBOM in this document, or both.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "$ref": "#/$defs/mailtoOrHttpsUri"
+        },
+        "ref": {
+          "$ref": "#/$defs/localId"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "uri"
+          ]
+        },
+        {
+          "required": [
+            "ref"
+          ]
+        }
+      ]
+    },
+    "controlCore": {
+      "description": "Fields shared by every checklist item. 'met' corresponds to a ticked box. 'partial' means the practice is in place for some but not all of what the control asks, for example commit-then-review against QA.07. 'partial', 'not_met' and 'not_applicable' must be explained. 'not_assessed' means the PMC opted out and did not answer, and is only allowed when scope is 'minimal'.",
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "met",
+            "partial",
+            "not_met",
+            "not_applicable",
+            "not_assessed"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "partial",
+              "not_met",
+              "not_applicable"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "explanation"
+        ]
+      }
+    },
+    "linkRule": {
+      "description": "Rule for items whose template line asks for a link: a 'met' status must carry at least one evidence entry.",
+      "if": {
+        "properties": {
+          "status": {
+            "const": "met"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "evidence"
+        ],
+        "properties": {
+          "evidence": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "control": {
+      "description": "A checklist item.",
+      "$ref": "#/$defs/controlCore",
+      "unevaluatedProperties": false
+    },
+    "linkedControl": {
+      "description": "A checklist item whose template line asks for a link.",
+      "allOf": [
+        {
+          "$ref": "#/$defs/controlCore"
+        },
+        {
+          "$ref": "#/$defs/linkRule"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "securityContactControl": {
+      "description": "VM.01: a met status must give a reporting contact; a private reporting route is recommended.",
+      "allOf": [
+        {
+          "$ref": "#/$defs/controlCore"
+        },
+        {
+          "$ref": "#/$defs/linkRule"
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "met"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "contact"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "contact": {
+          "$ref": "#/$defs/mailtoOrHttpsUri"
+        },
+        "privateReportingUri": {
+          "$ref": "#/$defs/httpsUri"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "controls": {
+      "description": "Tier 1 checklist items GV.01-EL.01. Every item must be present, so a missing answer is a validation error rather than a silent gap.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "GV.01",
+        "GV.02",
+        "GV.03",
+        "LE.01",
+        "LE.02",
+        "QA.01",
+        "QA.02",
+        "QA.03",
+        "QA.04",
+        "QA.05",
+        "QA.06",
+        "QA.07",
+        "BR.01",
+        "BR.02",
+        "BR.03",
+        "BR.04",
+        "VM.01",
+        "VM.02",
+        "EL.01"
+      ],
+      "properties": {
+        "GV.01": {
+          "description": "MUST include a contribution guideline.",
+          "$ref": "#/$defs/linkedControl"
+        },
+        "GV.02": {
+          "description": "Contribution guideline SHOULD set a quality standard.",
+          "$ref": "#/$defs/control"
+        },
+        "GV.03": {
+          "description": "MUST document usage and intended purpose.",
+          "$ref": "#/$defs/linkedControl"
+        },
+        "LE.01": {
+          "description": "MUST be publicly available under an open source license.",
+          "$ref": "#/$defs/linkedControl"
+        },
+        "LE.02": {
+          "description": "Dependencies SHOULD be available under open source licenses.",
+          "$ref": "#/$defs/control"
+        },
+        "QA.01": {
+          "description": "MUST list direct third-party dependencies (SBOM or lockfile), with checksums where applicable.",
+          "$ref": "#/$defs/linkedControl"
+        },
+        "QA.02": {
+          "description": "Source and change history MUST be public.",
+          "$ref": "#/$defs/linkedControl"
+        },
+        "QA.03": {
+          "description": "MUST document how to file a vulnerability report.",
+          "$ref": "#/$defs/linkedControl"
+        },
+        "QA.04": {
+          "description": "MUST include repeatable test procedures.",
+          "$ref": "#/$defs/linkedControl"
+        },
+        "QA.05": {
+          "description": "If non-memory-safe code is used, MUST mitigate memory-safety vulnerabilities.",
+          "$ref": "#/$defs/control"
+        },
+        "QA.06": {
+          "description": "SHOULD have more than one active contributor.",
+          "$ref": "#/$defs/control"
+        },
+        "QA.07": {
+          "description": "With >1 contributor, SHOULD require review of every change by a human non-author.",
+          "$ref": "#/$defs/control"
+        },
+        "BR.01": {
+          "description": "MUST document how to build from source.",
+          "$ref": "#/$defs/linkedControl"
+        },
+        "BR.02": {
+          "description": "Releases MUST have unique, monotonically increasing versions.",
+          "$ref": "#/$defs/linkedControl"
+        },
+        "BR.03": {
+          "description": "Released assets MUST be distributed with documented integrity verification.",
+          "$ref": "#/$defs/linkedControl"
+        },
+        "BR.04": {
+          "description": "Releases MUST include a log of functional and security changes.",
+          "$ref": "#/$defs/linkedControl"
+        },
+        "VM.01": {
+          "description": "MUST indicate at least one security contact.",
+          "$ref": "#/$defs/securityContactControl"
+        },
+        "VM.02": {
+          "description": "MUST publish discovered vulnerabilities in reasonable time, with mitigations.",
+          "$ref": "#/$defs/control"
+        },
+        "EL.01": {
+          "description": "Discontinuation of support SHOULD be communicated adequately.",
+          "$ref": "#/$defs/control"
+        }
+      }
+    },
+    "optOut": {
+      "description": "Why a PMC opted out of the full checklist, and when it must re-confirm. Required when scope is 'minimal'.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason",
+        "statement",
+        "decided",
+        "decisionRef",
+        "reviewBy"
+      ],
+      "properties": {
+        "reason": {
+          "enum": [
+            "no-commercial-use",
+            "research-or-experimental",
+            "winding-down",
+            "other"
+          ]
+        },
+        "statement": {
+          "description": "The PMC's own words, published in every minimal attestation.",
+          "type": "string",
+          "minLength": 1
+        },
+        "decided": {
+          "description": "Date of the PMC decision.",
+          "type": "string",
+          "format": "date"
+        },
+        "decisionRef": {
+          "description": "The PMC decision in the mailing list archive.",
+          "$ref": "#/$defs/httpsUri"
+        },
+        "reviewBy": {
+          "description": "Date by which the PMC must re-confirm, at most 12 months after decided.",
+          "type": "string",
+          "format": "date"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "scope": {
+            "const": "minimal"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "optOut"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "optOut"
+          ]
+        },
+        "properties": {
+          "controls": {
+            "patternProperties": {
+              "^": {
+                "properties": {
+                  "status": {
+                    "not": {
+                      "const": "not_assessed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

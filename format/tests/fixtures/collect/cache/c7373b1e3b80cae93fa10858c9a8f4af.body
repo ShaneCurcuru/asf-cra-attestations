@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+ <head>
+  <title>Index of /tomcat/tomcat-11/v11.0.27/bin</title>
+ </head>
+ <body>
+<h1>Index of /tomcat/tomcat-11/v11.0.27/bin</h1>
+<pre><img src="/icons/blank.gif" alt="Icon "> <a href="?C=N;O=D">Name</a>                                         <a href="?C=M;O=A">Last modified</a>      <a href="?C=S;O=A">Size</a>  <a href="?C=D;O=A">Description</a><hr><img src="/icons/back.gif" alt="[PARENTDIR]"> <a href="/tomcat/tomcat-11/v11.0.27/">Parent Directory</a>                                                  -   
+<img src="/icons/folder.gif" alt="[DIR]"> <a href="embed/">embed/</a>                                       2026-10-12 10:27    -   
+<img src="/icons/compressed.gif" alt="[   ]"> <a href="apache-tomcat-11.0.27-deployer.tar.gz">apache-tomcat-11.0.27-deployer.tar.gz</a>        2026-10-06 18:35  2.9M  
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27-deployer.tar.gz.asc">apache-tomcat-11.0.27-deployer.tar.gz.asc</a>    2026-10-06 18:35  849   
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27-deployer.tar.gz.sha512">apache-tomcat-11.0.27-deployer.tar.gz.sha512</a> 2026-10-06 18:35  167   
+<img src="/icons/compressed.gif" alt="[   ]"> <a href="apache-tomcat-11.0.27-deployer.zip">apache-tomcat-11.0.27-deployer.zip</a>           2026-10-06 18:35  2.9M  
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27-deployer.zip.asc">apache-tomcat-11.0.27-deployer.zip.asc</a>       2026-10-06 18:35  849   
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27-deployer.zip.sha512">apache-tomcat-11.0.27-deployer.zip.sha512</a>    2026-10-06 18:35  164   
+<img src="/icons/compressed.gif" alt="[   ]"> <a href="apache-tomcat-11.0.27-fulldocs.tar.gz">apache-tomcat-11.0.27-fulldocs.tar.gz</a>        2026-10-06 18:35   36M  
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27-fulldocs.tar.gz.asc">apache-tomcat-11.0.27-fulldocs.tar.gz.asc</a>    2026-10-06 18:35  849   
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27-fulldocs.tar.gz.sha512">apache-tomcat-11.0.27-fulldocs.tar.gz.sha512</a> 2026-10-06 18:35  167   
+<img src="/icons/compressed.gif" alt="[   ]"> <a href="apache-tomcat-11.0.27-windows-x64.zip">apache-tomcat-11.0.27-windows-x64.zip</a>        2026-10-06 18:35   16M  
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27-windows-x64.zip.asc">apache-tomcat-11.0.27-windows-x64.zip.asc</a>    2026-10-06 18:35  849   
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27-windows-x64.zip.sha512">apache-tomcat-11.0.27-windows-x64.zip.sha512</a> 2026-10-06 18:35  167   
+<img src="/icons/binary.gif" alt="[   ]"> <a href="apache-tomcat-11.0.27.exe">apache-tomcat-11.0.27.exe</a>                    2026-10-06 18:35   14M  
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27.exe.asc">apache-tomcat-11.0.27.exe.asc</a>                2026-10-06 18:35  849   
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27.exe.sha512">apache-tomcat-11.0.27.exe.sha512</a>             2026-10-06 18:35  155   
+<img src="/icons/compressed.gif" alt="[   ]"> <a href="apache-tomcat-11.0.27.tar.gz">apache-tomcat-11.0.27.tar.gz</a>                 2026-10-06 18:35   14M  
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27.tar.gz.asc">apache-tomcat-11.0.27.tar.gz.asc</a>             2026-10-06 18:35  849   
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27.tar.gz.sha512">apache-tomcat-11.0.27.tar.gz.sha512</a>          2026-10-06 18:35  158   
+<img src="/icons/compressed.gif" alt="[   ]"> <a href="apache-tomcat-11.0.27.zip">apache-tomcat-11.0.27.zip</a>                    2026-10-06 18:35   14M  
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27.zip.asc">apache-tomcat-11.0.27.zip.asc</a>                2026-10-06 18:35  849   
+<img src="/icons/text.gif" alt="[TXT]"> <a href="apache-tomcat-11.0.27.zip.sha512">apache-tomcat-11.0.27.zip.sha512</a>             2026-10-06 18:35  155   
+<hr></pre>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8" />
+<title>Apache Tomcat 11.0.27</title>
+<style type="text/css">
+body { font-family: Arial, Helvetica, sans-serif; font-size: 11pt; }
+dd { margin-top: 0.2em; margin-bottom: 0.5em; }
+</style>
+</head>
+<body>
+
+<h1 style="font-size: 1.3em;">Apache Tomcat 11.0.27</h1>
+<p>Useful references:</p>
+<ul>
+<li><a href="../RELEASE-NOTES">Release notes</a>, with important information
+about known issues</li>
+<li><a href="https://tomcat.apache.org/tomcat-11.0-doc/changelog.html">Changelog</a></li>
+</ul>
+
+<p><b>NOTE: The tar files in this distribution use GNU tar extensions,
+and must be untarred with a GNU compatible version of tar. The version
+of <code>tar</code> on Solaris and Mac OS X will not work with
+these files.</b></p>
+
+<p style="color: red;">Tomcat 11.0 requires Java 17 or later. Read the
+RELEASE-NOTES and the RUNNING.txt file in the distribution for more details.
+</p>
+
+<h2 style="font-size: 1.1em;">Packaging Details (or "What Should I Download?")</h2>
+<dl>
+<dt><b>bin/</b></dt>
+<dd><dl>
+  <dt>apache-tomcat-[version].zip or .tar.gz</dt>
+    <dd>Base distribution. These distributions do not include the Windows
+    service wrapper nor the compiled APR/native library for Windows.</dd>
+  <dt>apache-tomcat-[version].exe</dt>
+    <dd>Windows installer for Tomcat. &#xa0; This distribution is intended for
+    those users planning to launch Tomcat through the Windows shortcuts or
+    services.</dd>
+  <dt>apache-tomcat-[version]-windows-x64.zip</dt>
+    <dd>Windows specific distribution that includes the Windows service wrapper
+    and the compiled APR/native library.</dd>
+  <dt>apache-tomcat-[version]-deployer.zip or .tar.gz</dt>
+    <dd>The standalone
+    <a href="https://tomcat.apache.org/tomcat-11.0-doc/deployer-howto.html">
+    Tomcat Web Application Deployer</a>.</dd>
+  <dt>apache-tomcat-[version]-fulldocs.tar.gz</dt>
+    <dd>The Tomcat documentation bundle, including complete javadocs.</dd>
+</dl></dd>
+<dt><b>src/</b></dt>
+<dd><dl>
+  <dt>apache-tomcat-[version].zip or .tar.gz</dt>
+    <dd>The source code. See
+    <a href="https://tomcat.apache.org/tomcat-11.0-doc/building.html">building instructions</a>.</dd>
+</dl></dd>
+</dl>
+
+<p>Thank you for using <a href="https://tomcat.apache.org/">Tomcat</a>!
+</p>
+<p><b>The Apache Tomcat Project</b> <br /><a
+href="https://tomcat.apache.org/">https://tomcat.apache.org/</a></p>
+</body></html>
+</body></html>

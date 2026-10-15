@@ -1,0 +1,140 @@
+{
+  "project": "tomcat",
+  "pmc": "tomcat",
+  "sources": {
+    "project": "projects.json",
+    "committee": "committees.json",
+    "security": null,
+    "lifecycle": null
+  },
+  "repository": {
+    "url": "https://github.com/apache/tomcat",
+    "ref": "11.0.27",
+    "commit": "52f3b364e5882a5dbcfc42cb8313a7c2ae532c64"
+  },
+  "fields": {
+    "project": {
+      "result": "collected",
+      "source": "projects.json",
+      "note": ""
+    },
+    "contact": {
+      "result": "collected",
+      "source": "committees.json",
+      "note": ""
+    },
+    "vcs": {
+      "result": "collected",
+      "source": "projects.json",
+      "note": ""
+    },
+    "keysUri": {
+      "result": "collected",
+      "source": "downloads.apache.org",
+      "note": ""
+    }
+  },
+  "controls": {
+    "GV.01": {
+      "result": "collected",
+      "source": "repository",
+      "note": ""
+    },
+    "GV.02": {
+      "result": "needs answer",
+      "source": "",
+      "note": "Whether the guideline sets a quality standard is a PMC statement."
+    },
+    "GV.03": {
+      "result": "collected",
+      "source": "projects.json and repository",
+      "note": ""
+    },
+    "LE.01": {
+      "result": "collected",
+      "source": "repository",
+      "note": ""
+    },
+    "LE.02": {
+      "result": "baseline",
+      "source": "baseline/asf.json",
+      "note": "Answered once for every PMC by ASF policy."
+    },
+    "QA.01": {
+      "result": "needs answer",
+      "source": "release directories",
+      "note": "No SBOM was found next to the release files."
+    },
+    "QA.02": {
+      "result": "collected",
+      "source": "projects.json",
+      "note": ""
+    },
+    "QA.03": {
+      "result": "collected",
+      "source": "repository",
+      "note": ""
+    },
+    "QA.04": {
+      "result": "collected",
+      "source": "repository",
+      "note": ""
+    },
+    "QA.05": {
+      "result": "collected",
+      "source": "projects.json",
+      "note": ""
+    },
+    "QA.06": {
+      "result": "collected",
+      "source": "committees.json",
+      "note": ""
+    },
+    "QA.07": {
+      "result": "needs answer",
+      "source": "",
+      "note": "The review model (review-then-commit or commit-then-review) is a PMC statement."
+    },
+    "BR.01": {
+      "result": "collected",
+      "source": "repository",
+      "note": ""
+    },
+    "BR.02": {
+      "result": "collected",
+      "source": "projects.json",
+      "note": ""
+    },
+    "BR.03": {
+      "result": "baseline",
+      "source": "baseline/asf.json",
+      "note": "Answered once for every PMC by ASF policy."
+    },
+    "BR.04": {
+      "result": "collected",
+      "source": "repository",
+      "note": ""
+    },
+    "VM.01": {
+      "result": "baseline",
+      "source": "baseline/asf.json",
+      "note": "Answered once for every PMC by ASF policy."
+    },
+    "VM.02": {
+      "result": "baseline",
+      "source": "baseline/asf.json",
+      "note": "Answered once for every PMC by ASF policy."
+    },
+    "EL.01": {
+      "result": "needs answer",
+      "source": "",
+      "note": "No lifecycle source gave an end-of-life policy; ATR lifecycle (CLE) data can fill this."
+    }
+  },
+  "toAnswer": [
+    "GV.02",
+    "QA.01",
+    "QA.07",
+    "EL.01"
+  ]
+}

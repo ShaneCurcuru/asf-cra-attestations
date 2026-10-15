@@ -1,0 +1,94 @@
+{
+  "description": "Draft written by vsa-collect. Review every value and answer the controls the report lists.",
+  "project": {
+    "name": "Apache HTTP Server",
+    "url": "https://httpd.apache.org/"
+  },
+  "pmc": "Apache HTTP Server PMC",
+  "contact": {
+    "name": "Joe Orton",
+    "role": "Vice President, Apache HTTP Server",
+    "email": "private@httpd.apache.org"
+  },
+  "vcs": {
+    "type": "svn",
+    "url": "https://svn.apache.org/repos/asf/httpd/httpd/"
+  },
+  "keysUri": "https://downloads.apache.org/httpd/KEYS",
+  "controls": {
+    "GV.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://httpd.apache.org/"
+        },
+        {
+          "uri": "https://github.com/apache/httpd/blob/2.4.69/README"
+        }
+      ]
+    },
+    "LE.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/httpd/blob/2.4.69/LICENSE",
+          "description": "Apache License 2.0"
+        }
+      ]
+    },
+    "QA.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://svn.apache.org/repos/asf/httpd/httpd/"
+        },
+        {
+          "uri": "https://github.com/apache/httpd"
+        }
+      ]
+    },
+    "QA.04": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/httpd/tree/2.4.69/.github/workflows",
+          "description": "Automated builds and tests are configured in 2 CI file(s)."
+        }
+      ]
+    },
+    "QA.06": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://projects.apache.org/committee.html?httpd",
+          "description": "PMC of 59 members."
+        }
+      ]
+    },
+    "BR.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/httpd/blob/2.4.69/INSTALL"
+        }
+      ]
+    },
+    "BR.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://httpd.apache.org/download.cgi",
+          "description": "1 release listed in projects.json, each with a distinct version."
+        }
+      ]
+    },
+    "BR.04": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/httpd/blob/2.4.69/CHANGES"
+        }
+      ]
+    }
+  }
+}

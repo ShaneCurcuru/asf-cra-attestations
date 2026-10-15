@@ -1,0 +1,106 @@
+# Lint, type check and test settings follow apache/tooling-trusted-releases
+
+[project]
+name = "vsa-lite"
+version = "0.1.0"
+description = "Generate and validate VSA-lite CRA attestations for ASF releases"
+authors = [
+  { name = "ASF Tooling", email = "dev@tooling.apache.org" }
+]
+license = "Apache-2.0"
+readme = "README.md"
+requires-python = "~=3.14.0"
+dependencies = [
+  "jsonschema>=4.18,<5",
+]
+
+[project.optional-dependencies]
+# Typed pydantic models for ATR, generated from the schema; see vsa/typed.py
+models = [
+  "pydantic[email]>=2.11,<3",
+]
+
+[project.scripts]
+vsa = "vsa.cli:main"
+vsa-collect = "vsa.collect.cli:main"
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["vsa*"]
+
+[tool.setuptools.package-data]
+vsa = ["schema/*.json"]
+
+[dependency-groups]
+dev = [
+  "pre-commit>=2.20.0",
+  "pyright>=1.1.393",
+  "ruff>=0.9.4",
+]
+test = [
+  "pydantic[email]>=2.11,<3",
+  "pytest>=8.0",
+]
+# Pinned so that scripts/models_generate.py always writes the same vsa/models.py
+codegen = [
+  "datamodel-code-generator==0.83.0",
+]
+
+[tool.pyright]
+include = ["vsa"]
+exclude = ["**/__pycache__"]
+reportMissingImports = "error"
+reportMissingTypeStubs = false
+reportUnnecessaryComparison = "error"
+pythonVersion = "3.14"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+ignore = [
+  "S101", # assert
+]
+select = [
+  "A005", # stdlib-module-shadowing
+  "C90",  # cyclomatic-complexity
+  "E",    # pycodestyle
+  "F",    # pyflakes
+  "I",    # isort
+  "N",    # pep8-naming
+  "RUF",  # ruff-checks
+  "S",    # flake8-bandit
+  "TC",   # flake8-type-checking
+  "TID",  # flake8-tidy-imports
+  "UP",   # pyupgrade
+  "W"
+]
+
+[tool.ruff.lint.flake8-builtins]
+strict-checking = true
+
+[tool.ruff.lint.per-file-ignores]
+# verify downloads release files, and _fetch refuses anything but https before calling urlopen
+"vsa/digests.py" = ["S310"]
+# Tests import vsa modules after skipping when pydantic is missing
+"tests/test_models.py" = ["E402", "S603"]
+# Generated from the schema; its class docstrings carry the schema descriptions verbatim
+"vsa/models.py" = ["E501"]
+# The models script runs the pinned code generator and ruff with fixed argument lists
+"scripts/models_generate.py" = ["S603", "S607"]
+# The collector fetches only https URLs, and runs git with a fixed argument list
+"vsa/collect/fetch.py" = ["S310", "S603", "S607"]
+
+[tool.uv]
+# Dependency cooldown, as in apache/tooling-trusted-releases; requires uv 0.9.17+
+exclude-newer = "5 days"
+required-version = ">=0.9.17"

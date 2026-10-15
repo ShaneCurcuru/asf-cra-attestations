@@ -1,0 +1,17 @@
+29ccc7665f3bc5d84155a3092ab2209a053324e6
+.asf.yaml
+.gitattributes
+.github/GH-ROBOTS.txt
+.github/dependabot.yml
+.github/workflows/codeql-analysis.yml
+.github/workflows/maven.yml
+.github/workflows/scorecards-analysis.yml
+.gitignore
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE.txt
+NOTICE.txt
+README.md
+RELEASE-NOTES.txt
+SECURITY.md
+pom.xml

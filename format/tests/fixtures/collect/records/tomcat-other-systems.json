@@ -1,0 +1,14 @@
+{
+  "description": "TEST FIXTURE ONLY. Stands in for data from other systems: a RosterTool export for the chair, and ATR records for security and lifecycle.",
+  "committee": {
+    "chair_name": "Example RosterTool Chair",
+    "member_count": 30
+  },
+  "security": {
+    "contact": "security@tomcat.apache.org",
+    "policy_uri": "https://tomcat.apache.org/security.html"
+  },
+  "lifecycle": {
+    "policy_uri": "https://tomcat.apache.org/whichversion.html"
+  }
+}

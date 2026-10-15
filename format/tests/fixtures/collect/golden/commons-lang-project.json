@@ -1,0 +1,118 @@
+{
+  "description": "Draft written by vsa-collect. Review every value and answer the controls the report lists.",
+  "project": {
+    "name": "Apache Commons Lang",
+    "url": "https://commons.apache.org/lang/"
+  },
+  "pmc": "Apache Commons PMC",
+  "contact": {
+    "name": "Gary D. Gregory",
+    "role": "Vice President, Apache Commons",
+    "email": "private@commons.apache.org"
+  },
+  "vcs": {
+    "type": "git",
+    "url": "https://gitbox.apache.org/repos/asf/commons-lang.git"
+  },
+  "keysUri": "https://downloads.apache.org/commons/KEYS",
+  "controls": {
+    "GV.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/CONTRIBUTING.md"
+        }
+      ]
+    },
+    "GV.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/lang/"
+        },
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/README.md"
+        }
+      ]
+    },
+    "LE.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/LICENSE.txt",
+          "description": "Apache License 2.0"
+        }
+      ]
+    },
+    "QA.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "ref": "commons-lang3-cyclonedx.json",
+          "description": "SBOM published with the release."
+        }
+      ]
+    },
+    "QA.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://gitbox.apache.org/repos/asf/commons-lang.git"
+        },
+        {
+          "uri": "https://github.com/apache/commons-lang"
+        }
+      ]
+    },
+    "QA.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/SECURITY.md"
+        },
+        {
+          "uri": "https://www.apache.org/security/"
+        }
+      ]
+    },
+    "QA.04": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/tree/rel/commons-lang-3.17.0/.github/workflows",
+          "description": "Automated builds and tests are configured in 3 CI file(s)."
+        }
+      ]
+    },
+    "QA.05": {
+      "status": "not_applicable",
+      "explanation": "Written in Java, a memory-safe language, according to projects.json."
+    },
+    "QA.06": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://projects.apache.org/committee.html?commons",
+          "description": "PMC of 44 members."
+        }
+      ]
+    },
+    "BR.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/lang/download_lang.cgi",
+          "description": "33 releases listed in projects.json, each with a distinct version."
+        }
+      ]
+    },
+    "BR.04": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/RELEASE-NOTES.txt"
+        }
+      ]
+    }
+  }
+}

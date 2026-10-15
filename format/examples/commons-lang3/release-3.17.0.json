@@ -1,0 +1,39 @@
+{
+  "description": "Per-release inputs. Digests, sizes, key fingerprints and SBOM serial numbers are computed from the local files, not typed in.",
+  "version": "3.17.0",
+  "releaseDate": "2024-08-29",
+  "tag": "rel/commons-lang-3.17.0",
+  "commit": "29ccc7665f3bc5d84155a3092ab2209a053324e6",
+  "issued": "2026-10-15T00:00:00Z",
+  "comment": "ILLUSTRATIVE EXAMPLE ONLY. Artifact names, sizes, digests, signatures and the SBOM are the real published Apache Commons Lang 3.17.0 files. The control answers and the contact are illustrative and have not been issued or reviewed by the Apache Commons PMC.",
+  "artifacts": [
+    {
+      "id": "src-tar-gz",
+      "name": "commons-lang3-3.17.0-src.tar.gz",
+      "role": "source",
+      "official": true,
+      "uri": "https://archive.apache.org/dist/commons/lang/source/commons-lang3-3.17.0-src.tar.gz",
+      "signatureUri": "https://archive.apache.org/dist/commons/lang/source/commons-lang3-3.17.0-src.tar.gz.asc"
+    },
+    {
+      "id": "jar",
+      "name": "commons-lang3-3.17.0.jar",
+      "role": "binary",
+      "official": false,
+      "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+      "purl": "pkg:maven/org.apache.commons/commons-lang3@3.17.0?type=jar",
+      "signatureUri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar.asc",
+      "sbomRefs": [
+        "sbom-cdx"
+      ]
+    }
+  ],
+  "sboms": [
+    {
+      "id": "sbom-cdx",
+      "format": "CycloneDX",
+      "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-cyclonedx.json",
+      "signatureUri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-cyclonedx.json.asc"
+    }
+  ]
+}

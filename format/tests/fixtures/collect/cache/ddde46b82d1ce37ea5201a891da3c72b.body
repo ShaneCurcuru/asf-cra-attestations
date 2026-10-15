@@ -1,0 +1,331 @@
+{
+ "commons-lang": {
+  "bug-database": "http://issues.apache.org/jira/browse/LANG",
+  "category": [
+   "library"
+  ],
+  "description": "\n        Commons Lang, a package of Java utility classes for the\n        classes that are in java.lang's hierarchy, or are considered to be so\n        standard as to justify existence in java.lang.\n    ",
+  "doap": "http://svn.apache.org/repos/asf/commons/cms-site/trunk/doap/doap_lang.rdf",
+  "download-page": "http://commons.apache.org/lang/download_lang.cgi",
+  "homepage": "http://commons.apache.org/lang/",
+  "license": "http://usefulinc.com/doap/licenses/asl20",
+  "mailing-list": "http://commons.apache.org/mail-lists.html",
+  "name": "Apache Commons Lang",
+  "pmc": "commons",
+  "programming-language": "Java",
+  "release": [
+   {
+    "created": "2025-07-10",
+    "name": "commons-lang",
+    "revision": "3.18.0"
+   },
+   {
+    "created": "2024-08-29",
+    "name": "commons-lang",
+    "revision": "3.17.0"
+   },
+   {
+    "created": "2024-08-07",
+    "name": "commons-lang",
+    "revision": "3.16.0"
+   },
+   {
+    "created": "2024-07-18",
+    "name": "commons-lang",
+    "revision": "3.15.0"
+   },
+   {
+    "created": "2023-11-27",
+    "name": "commons-lang",
+    "revision": "3.14.0"
+   },
+   {
+    "created": "2023-07-27",
+    "name": "commons-lang",
+    "revision": "3.13.0"
+   },
+   {
+    "created": "2021-02-26",
+    "name": "commons-lang",
+    "revision": "3.12.0"
+   },
+   {
+    "created": "2020-07-12",
+    "name": "commons-lang",
+    "revision": "3.11"
+   },
+   {
+    "created": "2020-03-22",
+    "name": "commons-lang",
+    "revision": "3.10"
+   },
+   {
+    "created": "2019-04-15",
+    "name": "commons-lang",
+    "revision": "3.9"
+   },
+   {
+    "created": "2018-09-23",
+    "name": "commons-lang",
+    "revision": "3.8.1"
+   },
+   {
+    "created": "2018-08-20",
+    "name": "commons-lang",
+    "revision": "3.8"
+   },
+   {
+    "created": "2017-10-04",
+    "name": "commons-lang",
+    "revision": "3.7"
+   },
+   {
+    "created": "2016-04-17",
+    "name": "commons-lang",
+    "revision": "3.6"
+   },
+   {
+    "created": "2016-10-14",
+    "name": "commons-lang",
+    "revision": "3.5"
+   },
+   {
+    "created": "2015-04-06",
+    "name": "commons-lang",
+    "revision": "3.4"
+   },
+   {
+    "created": "2014-04-09",
+    "name": "commons-lang",
+    "revision": "3.3.2"
+   },
+   {
+    "created": "2014-03-18",
+    "name": "commons-lang",
+    "revision": "3.3.1"
+   },
+   {
+    "created": "2014-03-04",
+    "name": "commons-lang",
+    "revision": "3.3"
+   },
+   {
+    "created": "2014-01-05",
+    "name": "commons-lang",
+    "revision": "3.2.1"
+   },
+   {
+    "created": "2014-01-01",
+    "name": "commons-lang",
+    "revision": "3.2"
+   },
+   {
+    "created": "2011-11-14",
+    "name": "commons-lang",
+    "revision": "3.1"
+   },
+   {
+    "created": "2011-08-11",
+    "name": "commons-lang",
+    "revision": "3.0.1"
+   },
+   {
+    "created": "2011-07-18",
+    "name": "commons-lang",
+    "revision": "3.0"
+   },
+   {
+    "created": "2011-01-17",
+    "name": "commons-lang",
+    "revision": "2.6"
+   },
+   {
+    "created": "2010-02-25",
+    "name": "commons-lang",
+    "revision": "2.5"
+   },
+   {
+    "created": "2008-03-18",
+    "name": "commons-lang",
+    "revision": "2.4"
+   },
+   {
+    "created": "2007-02-13",
+    "name": "commons-lang",
+    "revision": "2.3"
+   },
+   {
+    "created": "2006-10-04",
+    "name": "commons-lang",
+    "revision": "2.2"
+   },
+   {
+    "created": "2005-06-12",
+    "name": "commons-lang",
+    "revision": "2.1"
+   },
+   {
+    "created": "2003-09-02",
+    "name": "commons-lang",
+    "revision": "2.0"
+   },
+   {
+    "created": "2002-11-25",
+    "name": "commons-lang",
+    "revision": "1.0.1"
+   },
+   {
+    "created": "2002-10-04",
+    "name": "commons-lang",
+    "revision": "1.0"
+   }
+  ],
+  "repository": [
+   "https://gitbox.apache.org/repos/asf/commons-lang.git"
+  ],
+  "shortdesc": "Java Common Components"
+ },
+ "httpd-http_server": {
+  "bug-database": "https://httpd.apache.org/bug_report.html",
+  "category": [
+   "network-server",
+   "http",
+   "httpd-module"
+  ],
+  "description": "\n      The Apache HTTP Server is an open-source HTTP server for modern\n      operating systems including UNIX, Microsoft Windows, Mac OS/X and Netware.\n      The goal of this project is to provide a secure, efficient and\n      extensible server that provides HTTP services observing the current\n      HTTP standards. Apache has been the most popular web server on the\n      Internet since April of 1996.\n    ",
+  "doap": "https://raw.githubusercontent.com/apache/httpd-site/main/content/doap.rdf",
+  "download-page": "https://httpd.apache.org/download.cgi",
+  "homepage": "https://httpd.apache.org/",
+  "implements": [
+   {
+    "body": "IETF",
+    "id": "RFC 2616",
+    "title": "Hypertext Transfer Protocol -- HTTP/1.1",
+    "url": "http://www.ietf.org/rfc/rfc2616.txt"
+   },
+   {
+    "body": "IETF",
+    "id": "RFC 2617",
+    "title": "HTTP Authentication: Basic and Digest Access Authentication",
+    "url": "http://www.ietf.org/rfc/rfc2617.txt"
+   },
+   {
+    "body": "IETF",
+    "id": "RFC 2518",
+    "title": "HTTP Extensions for Distributed Authoring -- WEBDAV",
+    "url": "http://www.ietf.org/rfc/rfc2518.txt"
+   },
+   {
+    "body": "IETF",
+    "id": "RFC 3253",
+    "title": "Versioning Extensions to WebDAV",
+    "url": "http://www.ietf.org/rfc/rfc3253.txt"
+   },
+   {
+    "body": "IETF",
+    "id": "RFC 3986",
+    "title": "Uniform Resource Identifier (URI): Generic Syntax",
+    "url": "http://www.ietf.org/rfc/rfc3986.txt"
+   }
+  ],
+  "license": "http://usefulinc.com/doap/licenses/asl20",
+  "mailing-list": "https://httpd.apache.org/lists.html",
+  "name": "Apache HTTP Server",
+  "pmc": "httpd",
+  "programming-language": "C",
+  "release": [
+   {
+    "created": "2026-10-01",
+    "name": "Recommended current 2.4 release",
+    "revision": "2.4.69"
+   }
+  ],
+  "repository": [
+   "https://svn.apache.org/repos/asf/httpd/httpd/"
+  ],
+  "shortdesc": "\n      The Apache HTTP Server application 'httpd'.\n    "
+ },
+ "tomcat": {
+  "bug-database": "http://tomcat.apache.org/bugreport.html",
+  "category": [
+   "network-server",
+   "http",
+   "javaee"
+  ],
+  "created": "2006-01-27",
+  "description": "Apache Tomcat is a web server that is an open source software\n    implementation of the Java Servlet, JavaServer Pages, Java Expression\n    Language and Java WebSocket technologies. The Java Servlet, JavaServer\n    Pages, Java Expression Language and Java WebSocket specifications are\n    developed under the Java Community Process. Apache Tomcat is developed\n    in an open and participatory environment and released under the Apache\n    License version 2.\n\n    Apache Tomcat is intended to be a collaboration of the best-of-breed\n    developers from around the world. We invite you to participate in this open\n    development project.\n\n    Apache Tomcat powers numerous large-scale, mission-critical web applications\n    across a diverse range of industries and organizations. Some of these users\n    and their stories are listed on the PoweredBy wiki page.",
+  "doap": "http://svn.apache.org/repos/asf/tomcat/site/trunk/docs/doap_Tomcat.rdf",
+  "download-page": "http://tomcat.apache.org/",
+  "homepage": "http://tomcat.apache.org/",
+  "implements": [
+   {
+    "body": "JCP",
+    "id": "JSR 369",
+    "title": "Java Servlet 4.0",
+    "url": "http://www.jcp.org/en/jsr/detail?id=369"
+   },
+   {
+    "body": "JCP",
+    "id": "JSR 340",
+    "title": "Java Servlet 3.1",
+    "url": "http://www.jcp.org/en/jsr/detail?id=340"
+   },
+   {
+    "body": "JCP",
+    "id": "JSR 245",
+    "title": "JavaServer Pages 2.1-2.3",
+    "url": "http://www.jcp.org/en/jsr/detail?id=245"
+   },
+   {
+    "body": "JCP",
+    "id": "JSR 341",
+    "title": "Expression Language 3.0",
+    "url": "http://www.jcp.org/en/jsr/detail?id=341"
+   },
+   {
+    "body": "JCP",
+    "id": "JSR 356",
+    "title": "Java API for WebSocket",
+    "url": "http://www.jcp.org/en/jsr/detail?id=356"
+   },
+   {
+    "body": "JCP",
+    "id": "JSR 315",
+    "title": "Java Servlet 3.0",
+    "url": "http://www.jcp.org/en/jsr/detail?id=315"
+   }
+  ],
+  "license": "http://usefulinc.com/doap/licenses/asl20",
+  "mailing-list": "http://tomcat.apache.org/lists.html",
+  "maintainer": [
+   {
+    "mbox": "mailto:dev@tomcat.apache.org",
+    "name": "Tomcat PMC"
+   }
+  ],
+  "name": "Apache Tomcat",
+  "pmc": "tomcat",
+  "programming-language": "Java",
+  "release": [
+   {
+    "created": "2026-10-12",
+    "name": "Latest Stable 10.1.x Release",
+    "revision": "10.1.61"
+   },
+   {
+    "created": "2022-10-10",
+    "name": "Latest Stable 10.0.x Release",
+    "revision": "10.0.27"
+   },
+   {
+    "created": "2025-10-12",
+    "name": "Latest Stable 9.0.x Release",
+    "revision": "9.0.123"
+   }
+  ],
+  "repository": [
+   "https://gitbox.apache.org/repos/asf/tomcat.git"
+  ],
+  "shortdesc": "A Java Servlet, JavaServer Pages, Java Expression\n    Language and Java WebSocket specifications implementation."
+ }
+}

@@ -1,0 +1,228 @@
+{
+  "schemaVersion": "0.3.0",
+  "template": {
+    "id": "orcwg-vsa-lite",
+    "version": "0.1",
+    "uri": "https://github.com/orcwg/cra-attestations/blob/main/proposals/template-lite.md",
+    "basis": "BSI TR-03185-2"
+  },
+  "attestationId": "urn:uuid:3eedca1d-fcf8-5806-b86c-c4a9230b4593",
+  "scope": "minimal",
+  "optOut": {
+    "reason": "no-commercial-use",
+    "statement": "Illustrative statement: this PMC does not expect commercial use of the project and has chosen not to complete the full checklist.",
+    "decided": "2026-09-01",
+    "decisionRef": "https://lists.apache.org/list.html?dev@commons.apache.org",
+    "reviewBy": "2027-09-01"
+  },
+  "issued": "2026-10-15T00:00:00Z",
+  "comment": "ILLUSTRATIVE EXAMPLE ONLY. Artifact names, sizes, digests, signatures and the SBOM are the real published Apache Commons Lang 3.17.0 files. The control answers and the contact are illustrative and have not been issued or reviewed by the Apache Commons PMC.",
+  "issuer": {
+    "name": "The Apache Software Foundation",
+    "registeredAddress": "1000 N West Street, Suite 1200, Wilmington, DE 19801, U.S.A.",
+    "website": "https://www.apache.org/",
+    "role": "steward",
+    "relationship": "Apache Commons Lang is governed by the Apache Commons PMC, a committee of the ASF Board. Releases are approved by PMC vote under ASF release policy."
+  },
+  "contact": {
+    "name": "Example PMC Chair",
+    "role": "Vice President, Apache Commons (PMC Chair)",
+    "email": "private@commons.apache.org"
+  },
+  "subject": {
+    "project": {
+      "name": "Apache Commons Lang",
+      "url": "https://commons.apache.org/proper/commons-lang/",
+      "purl": "pkg:maven/org.apache.commons/commons-lang3"
+    },
+    "release": {
+      "version": "3.17.0",
+      "releaseDate": "2024-08-29",
+      "vcs": {
+        "type": "git",
+        "url": "https://gitbox.apache.org/repos/asf/commons-lang.git",
+        "tag": "rel/commons-lang-3.17.0",
+        "commit": "29ccc7665f3bc5d84155a3092ab2209a053324e6"
+      }
+    },
+    "artifacts": [
+      {
+        "id": "src-tar-gz",
+        "name": "commons-lang3-3.17.0-src.tar.gz",
+        "role": "source",
+        "official": true,
+        "uri": "https://archive.apache.org/dist/commons/lang/source/commons-lang3-3.17.0-src.tar.gz",
+        "size": 1195408,
+        "digests": {
+          "sha512": "e633b0caeb9556c68384c2bf20e374fbac910b9979b25774c632e50c1bec41e97c14362978dc092c8b5859291e54fe51e76ad7a61c9b2efbe1e4538f46c1e3ee"
+        },
+        "signature": {
+          "format": "openpgp",
+          "uri": "https://archive.apache.org/dist/commons/lang/source/commons-lang3-3.17.0-src.tar.gz.asc",
+          "keyFingerprint": "2DB4F1EF0FA761ECC4EA935C86FDC7E2A11262CB",
+          "keysUri": "https://downloads.apache.org/commons/KEYS"
+        }
+      },
+      {
+        "id": "jar",
+        "name": "commons-lang3-3.17.0.jar",
+        "role": "binary",
+        "official": false,
+        "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+        "purl": "pkg:maven/org.apache.commons/commons-lang3@3.17.0?type=jar",
+        "size": 673587,
+        "digests": {
+          "sha512": "dfd5ff7fe7f852b9caabc81e5a00e20616f98405085f059b64dc2121feb5fa6cb327e11a3d2f954c079811c31f6fd484e90f932d45078796fbfa7dbf1f1eb5aa"
+        },
+        "signature": {
+          "format": "openpgp",
+          "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar.asc",
+          "keyFingerprint": "2DB4F1EF0FA761ECC4EA935C86FDC7E2A11262CB",
+          "keysUri": "https://downloads.apache.org/commons/KEYS"
+        },
+        "sbomRefs": [
+          "sbom-cdx"
+        ]
+      }
+    ],
+    "sboms": [
+      {
+        "id": "sbom-cdx",
+        "format": "CycloneDX",
+        "specVersion": "1.5",
+        "mediaType": "application/vnd.cyclonedx+json",
+        "serialNumber": "urn:uuid:dd3f4d4a-567f-3a32-a5a0-7d26a6b05b61",
+        "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-cyclonedx.json",
+        "digests": {
+          "sha512": "b39ff96546bccdcf8fd2547ba3c130988541a99557e08de4b99bae09c43be569bf1939cec9fdba65d54df890c80fe58ba72e5194f9adb26c00b3f497f7f04230"
+        },
+        "signature": {
+          "format": "openpgp",
+          "uri": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0-cyclonedx.json.asc",
+          "keyFingerprint": "2DB4F1EF0FA761ECC4EA935C86FDC7E2A11262CB",
+          "keysUri": "https://downloads.apache.org/commons/KEYS"
+        }
+      }
+    ]
+  },
+  "controls": {
+    "GV.01": {
+      "status": "not_assessed"
+    },
+    "GV.02": {
+      "status": "not_assessed"
+    },
+    "GV.03": {
+      "status": "not_assessed"
+    },
+    "LE.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/LICENSE.txt",
+          "description": "Apache License 2.0"
+        }
+      ]
+    },
+    "LE.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/legal/resolved.html",
+          "description": "ASF third-party licensing policy applies to every release."
+        }
+      ]
+    },
+    "QA.01": {
+      "status": "not_assessed"
+    },
+    "QA.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://gitbox.apache.org/repos/asf/commons-lang.git"
+        },
+        {
+          "uri": "https://github.com/apache/commons-lang"
+        }
+      ]
+    },
+    "QA.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/security.html"
+        },
+        {
+          "uri": "https://www.apache.org/security/"
+        }
+      ]
+    },
+    "QA.04": {
+      "status": "not_assessed"
+    },
+    "QA.05": {
+      "status": "not_applicable",
+      "explanation": "Written only in Java, a memory-safe language running on the JVM; no code in non-memory-safe languages."
+    },
+    "QA.06": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/proper/commons-lang/team.html"
+        }
+      ]
+    },
+    "QA.07": {
+      "status": "not_assessed"
+    },
+    "BR.01": {
+      "status": "not_assessed"
+    },
+    "BR.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://archive.apache.org/dist/commons/lang/",
+          "description": "Complete release history."
+        }
+      ]
+    },
+    "BR.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/info/verification.html"
+        },
+        {
+          "uri": "https://downloads.apache.org/commons/KEYS"
+        }
+      ]
+    },
+    "BR.04": {
+      "status": "not_assessed"
+    },
+    "VM.01": {
+      "status": "met",
+      "contact": "mailto:security@apache.org",
+      "privateReportingUri": "https://www.apache.org/security/",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/security/"
+        }
+      ]
+    },
+    "VM.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/security/committers.html",
+          "description": "ASF vulnerability handling process: CVE assignment, coordinated disclosure, public announcement."
+        }
+      ]
+    },
+    "EL.01": {
+      "status": "not_assessed"
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "description": "Per-project inputs maintained by the PMC. Stable across releases.",
+  "project": {
+    "name": "Apache Commons Lang",
+    "url": "https://commons.apache.org/proper/commons-lang/",
+    "purl": "pkg:maven/org.apache.commons/commons-lang3"
+  },
+  "pmc": "Apache Commons PMC",
+  "contact": {
+    "name": "Example PMC Chair",
+    "role": "Vice President, Apache Commons (PMC Chair)",
+    "email": "private@commons.apache.org"
+  },
+  "vcs": {
+    "type": "git",
+    "url": "https://gitbox.apache.org/repos/asf/commons-lang.git"
+  },
+  "keysUri": "https://downloads.apache.org/commons/KEYS",
+  "controls": {
+    "GV.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/CONTRIBUTING.md"
+        }
+      ]
+    },
+    "GV.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/CONTRIBUTING.md",
+          "description": "Requires tests, checkstyle-clean code and a passing 'mvn clean verify' for every contribution."
+        }
+      ]
+    },
+    "GV.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/proper/commons-lang/userguide.html"
+        }
+      ]
+    },
+    "LE.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/LICENSE.txt",
+          "description": "Apache License 2.0"
+        }
+      ]
+    },
+    "QA.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "ref": "sbom-cdx",
+          "description": "CycloneDX SBOM for the binary jar, with component hashes."
+        }
+      ]
+    },
+    "QA.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://gitbox.apache.org/repos/asf/commons-lang.git"
+        },
+        {
+          "uri": "https://github.com/apache/commons-lang"
+        }
+      ]
+    },
+    "QA.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/security.html"
+        },
+        {
+          "uri": "https://www.apache.org/security/"
+        }
+      ]
+    },
+    "QA.04": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/CONTRIBUTING.md",
+          "description": "Test suite runs with 'mvn clean verify'; also run in GitHub Actions on every push."
+        }
+      ]
+    },
+    "QA.06": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/proper/commons-lang/team.html"
+        }
+      ]
+    },
+    "QA.07": {
+      "status": "partial",
+      "explanation": "Apache Commons operates commit-then-review (CTR): committers may commit directly, and every commit is posted to commits@commons.apache.org for after-the-fact review by other committers. Pull requests from non-committers are reviewed before merge."
+    },
+    "BR.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/CONTRIBUTING.md"
+        }
+      ]
+    },
+    "BR.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://archive.apache.org/dist/commons/lang/",
+          "description": "Complete release history."
+        }
+      ]
+    },
+    "BR.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/info/verification.html"
+        },
+        {
+          "uri": "https://downloads.apache.org/commons/KEYS"
+        }
+      ]
+    },
+    "BR.04": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/RELEASE-NOTES.txt"
+        }
+      ]
+    },
+    "EL.01": {
+      "status": "not_met",
+      "explanation": "Project-level retirement is announced through the Apache Attic, but Commons Lang does not publish a per-version support or end-of-life policy."
+    }
+  }
+}

@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+ <head>
+  <title>Index of /httpd</title>
+ </head>
+ <body>
+<h1>Index of /dist/httpd</h1>
+
+<h2>Apache HTTP Server <u>Source Code</u> Distributions</h2>
+
+<p>This download page includes <strong>only the sources</strong> to compile 
+   and build Apache yourself with the proper tools.  </p>
+
+<h2>Important Notices</h2>
+
+<ul>
+<li><a href="#releases">Current Releases</a></li>
+<li><a href="#archive">Older Releases</a></li>
+<li><a href="#sig">PGP Signatures</a></li>
+<li><a href="#patches">Official Patches</a></li>
+</ul>
+
+<pre><img src="/icons/blank.gif" alt="Icon "> <a href="?C=N;O=D">Name</a>                        <a href="?C=M;O=A">Last modified</a>      <a href="?C=S;O=A">Size</a>  <a href="?C=D;O=A">Description</a><hr><img src="/icons/back.gif" alt="[PARENTDIR]"> <a href="/">Parent Directory</a>                                 -   HTTP Server project
+<img src="/icons/folder.gif" alt="[DIR]"> <a href="binaries/">binaries/</a>                   2026-05-01 16:49    -   Binary distributions
+<img src="/icons/folder.gif" alt="[DIR]"> <a href="docs/">docs/</a>                       2026-05-01 16:49    -   Extra documentation packages
+<img src="/icons/folder.gif" alt="[DIR]"> <a href="mod_fcgid/">mod_fcgid/</a>                  2026-05-01 16:49    -   HTTP Server project
+<img src="/icons/folder.gif" alt="[DIR]"> <a href="mod_ftp/">mod_ftp/</a>                    2026-05-01 16:49    -   HTTP Server project
+<img src="/icons/folder.gif" alt="[DIR]"> <a href="patches/">patches/</a>                    2026-05-01 16:49    -   Official patches
+<img src="/icons/text.gif" alt="[TXT]"> <a href="Announcement2.4.html">Announcement2.4.html</a>        2026-10-01 12:55  3.8K  HTTP Server project
+<img src="/icons/text.gif" alt="[TXT]"> <a href="Announcement2.4.txt">Announcement2.4.txt</a>         2026-10-01 12:55  2.5K  HTTP Server project
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="CHANGES_2.4">CHANGES_2.4</a>                 2026-10-01 13:38  403K  HTTP Server project
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="CHANGES_2.4.69">CHANGES_2.4.69</a>              2026-10-01 13:38   11K  HTTP Server project
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="CURRENT-IS-2.4.69">CURRENT-IS-2.4.69</a>           2026-10-01 13:38    0   HTTP Server project
+<img src="/icons/quill.gif" alt="[SIG]"> <a href="KEYS">KEYS</a>                        2021-09-01 13:38  537K  Developer PGP/GPG keys
+<img src="/icons/quill.gif" alt="[SIG]"> <a href="META.asc">META.asc</a>                    2018-03-09 10:33  801   PGP signature
+<img src="/icons/compressed.gif" alt="[TGZ]"> <a href="httpd-2.4.69.tar.bz2">httpd-2.4.69.tar.bz2</a>        2026-10-01 12:55  8.1M  HTTP Server project
+<img src="/icons/quill.gif" alt="[SIG]"> <a href="httpd-2.4.69.tar.bz2.asc">httpd-2.4.69.tar.bz2.asc</a>    2026-10-01 12:55  870   PGP signature
+<img src="/icons/text.gif" alt="[TXT]"> <a href="httpd-2.4.69.tar.bz2.sha256">httpd-2.4.69.tar.bz2.sha256</a> 2026-10-01 12:55   87   HTTP Server project
+<img src="/icons/text.gif" alt="[TXT]"> <a href="httpd-2.4.69.tar.bz2.sha512">httpd-2.4.69.tar.bz2.sha512</a> 2026-10-01 12:55  151   HTTP Server project
+<img src="/icons/compressed.gif" alt="[TGZ]"> <a href="httpd-2.4.69.tar.gz">httpd-2.4.69.tar.gz</a>         2026-10-01 12:55   10M  HTTP Server project
+<img src="/icons/quill.gif" alt="[SIG]"> <a href="httpd-2.4.69.tar.gz.asc">httpd-2.4.69.tar.gz.asc</a>     2026-10-01 12:55  870   PGP signature
+<img src="/icons/text.gif" alt="[TXT]"> <a href="httpd-2.4.69.tar.gz.sha256">httpd-2.4.69.tar.gz.sha256</a>  2026-10-01 12:55   86   HTTP Server project
+<img src="/icons/text.gif" alt="[TXT]"> <a href="httpd-2.4.69.tar.gz.sha512">httpd-2.4.69.tar.gz.sha512</a>  2026-10-01 12:55  150   HTTP Server project
+<img src="/icons/image2.gif" alt="[IMG]"> <a href="httpd_logo_wide_new.png">httpd_logo_wide_new.png</a>     2016-12-21 20:14   19K  HTTP Server project
+<hr></pre>
+<h2><a name="releases">Current Releases</a></h2>
+
+<p>For details on current releases, please see the 
+   <a href="http://httpd.apache.org/download.cgi">Apache HTTP
+   Server Download Page</a>.</p>
+
+<h2><a name="archive">Older Releases</a></h2>
+
+<p>Only current, recommended releases are available on www.apache.org
+   and the mirror sites.  Older releases can be obtained from the <a
+   href="http://archive.apache.org/dist/httpd/">archive site</a>.</p>
+
+<h2><a name="sig">PGP Signatures</a></h2>
+
+<p>All of the release distribution packages have been digitally signed
+   (using PGP or GPG) by the Apache Group members that constructed them.
+   There will be an accompanying <SAMP><EM>distribution</EM>.asc</SAMP> file
+   in the same directory as the distribution.  The PGP keys can be found
+   at the MIT key repository and within this project's
+   <a href="http://www.apache.org/dist/httpd/KEYS">KEYS file</a>.</p>
+
+<p>Always use the signature files to verify the authenticity
+   of the distribution, <i>e.g.</i>,</p>
+
+<pre>
+% pgpk -a KEYS
+% pgpv httpd-2.2.8.tar.gz.asc
+<i>or</i>,
+% pgp -ka KEYS
+% pgp httpd-2.2.8.tar.gz.asc
+<i>or</i>,
+% gpg --import KEYS
+% gpg --verify httpd-2.2.8.tar.gz.asc
+</pre>
+
+<p>We offer MD5 hashes as an alternative to validate the integrity
+   of the downloaded files. A unix program called <code>md5</code> or
+   <code>md5sum</code> is included in many unix distributions.  It is
+   also available as part of <a
+   href="http://www.gnu.org/software/textutils/textutils.html">GNU
+   Textutils</a>.  Windows users can get binary md5 programs from <a
+   href="http://www.fourmilab.ch/md5/">here</a>, <a
+   href="http://www.pc-tools.net/win32/freeware/console/">here</a>, or
+   <a href="http://www.slavasoft.com/fsum/">here</a>.</p>
+
+<h2><a name="patches">Official Patches</a></h2>
+
+<p>When we have patches to a minor bug or two, or features which we
+   haven't yet included in a new release, we will put them in the
+   <A HREF="patches/">patches</A>
+   subdirectory so people can get access to it before we roll another
+   complete release.</p>
+</body></html>

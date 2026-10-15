@@ -1,0 +1,18 @@
+{
+  "description": "TEST FIXTURE ONLY. An example community baseline that Java projects might agree on, layered on the ASF baseline.",
+  "controls": {
+    "LE.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/legal/release-policy.html",
+          "description": "Every release is under the Apache License 2.0."
+        }
+      ]
+    },
+    "QA.05": {
+      "status": "not_applicable",
+      "explanation": "Java code only; the JVM provides memory safety."
+    }
+  }
+}

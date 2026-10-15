@@ -1,0 +1,23 @@
+{
+  "version": "2.4.69",
+  "tag": "2.4.69",
+  "issued": "2026-10-01T00:00:00Z",
+  "artifacts": [
+    {
+      "id": "httpd.tar.bz2",
+      "name": "httpd-2.4.69.tar.bz2",
+      "role": "source",
+      "official": true,
+      "uri": "https://downloads.apache.org/httpd/httpd-2.4.69.tar.bz2",
+      "signatureUri": "https://downloads.apache.org/httpd/httpd-2.4.69.tar.bz2.asc"
+    },
+    {
+      "id": "httpd.tar.gz",
+      "name": "httpd-2.4.69.tar.gz",
+      "role": "source",
+      "official": true,
+      "uri": "https://downloads.apache.org/httpd/httpd-2.4.69.tar.gz",
+      "signatureUri": "https://downloads.apache.org/httpd/httpd-2.4.69.tar.gz.asc"
+    }
+  ]
+}

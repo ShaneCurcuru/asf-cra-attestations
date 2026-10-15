@@ -1,0 +1,43 @@
+# Mirrors the Python hooks of apache/tooling-trusted-releases
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
+  hooks:
+    - id: check-ast
+    - id: check-case-conflict
+    - id: check-json
+    - id: check-merge-conflict
+    - id: check-toml
+    - id: check-yaml
+    - id: detect-private-key
+    - id: end-of-file-fixer
+    - id: mixed-line-ending
+    - id: trailing-whitespace
+- repo: local
+  hooks:
+    - id: ruff
+      name: lint Python files with Ruff
+      entry: uv run --frozen ruff check --fix
+      language: system
+      types: [python]
+
+    - id: ruff-format
+      name: format Python files with Ruff
+      entry: uv run --frozen ruff format --force-exclude
+      language: system
+      types: [python]
+
+    - id: pyright
+      name: type check Python files with Pyright
+      entry: uv run --frozen pyright
+      language: system
+      require_serial: true
+      types: [python]
+      exclude: ^tests/
+
+    - id: models-up-to-date
+      name: check that vsa/models.py matches the JSON Schema
+      entry: uv run --frozen --group codegen python scripts/models_generate.py --check
+      language: system
+      pass_filenames: false
+      files: ^(vsa/schema/.*\.json|vsa/models\.py|scripts/models_generate\.py)$
