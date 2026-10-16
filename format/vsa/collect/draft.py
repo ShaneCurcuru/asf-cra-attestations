@@ -74,7 +74,9 @@ class Options:
     ref: str | None = None
     git_url: str | None = None
     dist_dirs: tuple[str, ...] = ()
-    # Baseline files the project inherits, broadest first: the ASF baseline, then any community baselines
+    # The parent written into the draft, as the person gave it
+    parent: str | None = None
+    # The settings files the draft inherits, root first, such as the ASF baseline then a community baseline
     baselines: tuple[str, ...] = ()
 
 
@@ -105,6 +107,8 @@ def project_draft(
     facts, keys = _facts(fetcher, data, options)
     resolutions = _apply_baselines(resolve.all_controls(facts), options.baselines)
     draft, field_report = _project_fields(facts, keys)
+    if options.parent is not None:
+        draft = {"description": draft.pop("description"), "parent": options.parent, **draft}
     draft["controls"] = {c: r.control for c, r in resolutions.items() if r.control is not None}
     report: document.Document = {
         "project": options.key,

@@ -30,6 +30,7 @@ import vsa.collect.records as records
 import vsa.collect.resolve as resolve
 import vsa.collect.sources as sources
 import vsa.document as document
+import vsa.settings as settings
 
 _ROOT: Final = pathlib.Path(__file__).resolve().parent.parent
 _FIXTURES: Final = pathlib.Path(__file__).resolve().parent / "fixtures" / "collect"
@@ -132,15 +133,15 @@ def test_answered_draft_generates_a_valid_attestation(tmp_path: pathlib.Path) ->
         }
     )
     release = _tomcat_source_release(tmp_path)
-    baseline = document.load(_ROOT / "baseline" / "asf.json")
-    first = document.dump(assemble.attestation(baseline, project, release, str(tmp_path)))
-    second = document.dump(assemble.attestation(baseline, project, release, str(tmp_path)))
+    layers = [*settings.chain(_ROOT / "baseline" / "asf.json"), settings.Layer("project", project)]
+    first = document.dump(assemble.attestation(layers, release, str(tmp_path)))
+    second = document.dump(assemble.attestation(layers, release, str(tmp_path)))
     assert first == second
     assert document.check(json.loads(first)) == []
 
 
 def test_baseline_control_missing_from_given_baselines_needs_answer(tmp_path: pathlib.Path) -> None:
-    group_only = ["--baseline", str(_FIXTURES / "baselines" / "java-group.json")]
+    group_only = ["--parent", "java-group.json", "-I", str(_FIXTURES / "baselines")]
     args = [*_OFFLINE, "init", "tomcat", *_INIT_CASES["tomcat"], "--projects-base", _PROJECTS_BASE, *group_only]
     report_path = tmp_path / "report.json"
     assert cli.main([*args, "-o", str(tmp_path / "project.json"), "--report", str(report_path)]) == 0
@@ -149,30 +150,33 @@ def test_baseline_control_missing_from_given_baselines_needs_answer(tmp_path: pa
     assert "VM.02" in report["toAnswer"]
 
 
-def test_baselines_are_layered_and_win_over_collected_answers(tmp_path: pathlib.Path) -> None:
+def test_parents_are_layered_and_win_over_collected_answers(tmp_path: pathlib.Path) -> None:
     out, report_path = tmp_path / "project.json", tmp_path / "report.json"
-    baselines = [
-        "--baseline",
-        str(_ROOT / "baseline" / "asf.json"),
-        "--baseline",
-        str(_FIXTURES / "baselines" / "java-group.json"),
-    ]
-    args = [*_OFFLINE, "init", "tomcat", *_INIT_CASES["tomcat"], "--projects-base", _PROJECTS_BASE, *baselines]
+    # A group baseline whose own parent is the ASF baseline, next to where the draft is written
+    group = document.load(_FIXTURES / "baselines" / "java-group.json")
+    group["parent"] = "asf.json"
+    (tmp_path / "java-group.json").write_text(document.dump(group), encoding="utf-8")
+    parents = ["--parent", "java-group.json", "-I", str(_ROOT / "baseline")]
+    args = [*_OFFLINE, "init", "tomcat", *_INIT_CASES["tomcat"], "--projects-base", _PROJECTS_BASE, *parents]
     assert cli.main([*args, "-o", str(out), "--report", str(report_path)]) == 0
     project, report = document.load(out), document.load(report_path)
+    assert project["parent"] == "java-group.json"
     for control_id in ("LE.01", "QA.05", "QA.03", "VM.01"):
         assert control_id not in project["controls"]
         assert report["controls"][control_id]["result"] == resolve.BASELINE
     assert report["controls"]["QA.05"]["source"] == "java-group.json"
     assert report["controls"]["QA.03"]["source"] == "asf.json"
     assert "SECURITY.md" in report["controls"]["QA.03"]["note"]
+    # The draft's parent chain is the one vsa generate follows
+    sources = [pathlib.Path(layer.source).name for layer in settings.chain(out, include=[_ROOT / "baseline"])]
+    assert sources == ["asf.json", "java-group.json", "project.json"]
 
 
 def test_draft_alone_does_not_generate(tmp_path: pathlib.Path) -> None:
     project = document.load(_GOLDEN / "tomcat-project.json")
-    baseline = document.load(_ROOT / "baseline" / "asf.json")
+    layers = [*settings.chain(_ROOT / "baseline" / "asf.json"), settings.Layer("project", project)]
     with pytest.raises(document.InputError, match=r"GV\.02, QA\.01, QA\.07, EL\.01"):
-        assemble.attestation(baseline, project, _tomcat_source_release(tmp_path), str(tmp_path))
+        assemble.attestation(layers, _tomcat_source_release(tmp_path), str(tmp_path))
 
 
 @pytest.mark.parametrize("name", sorted(_INIT_CASES))

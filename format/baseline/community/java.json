@@ -1,6 +1,7 @@
 {
   "name": "java",
-  "description": "ILLUSTRATIVE community baseline for ASF projects written only in JVM languages. It is layered on baseline/asf.json and below each project's answers. No group of PMCs has agreed to it yet.",
+  "description": "ILLUSTRATIVE community baseline for ASF projects written only in JVM languages. Its parent is baseline/asf.json, and a project names it as its own parent to inherit both. No group of PMCs has agreed to it yet.",
+  "parent": "../asf.json",
   "controls": {
     "QA.05": {
       "status": "not_applicable",

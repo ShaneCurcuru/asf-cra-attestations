@@ -1,5 +1,15 @@
 {
-  "description": "ASF-wide inputs shared by every PMC. A project file may replace any control here.",
+  "name": "asf",
+  "description": "Root settings for every ASF PMC: the issuer, the template, and the answers set by Foundation policy. It has no parent. Project and community files name it as their parent and may replace any control here, except the fields listed under required. PROPOSED required list, not yet agreed.",
+  "required": [
+    "/template",
+    "/issuer",
+    "/controls/LE.02",
+    "/controls/VM.02",
+    "/controls/QA.03/status",
+    "/controls/BR.03/status",
+    "/controls/VM.01/status"
+  ],
   "template": {
     "id": "orcwg-vsa-lite",
     "version": "0.1",

@@ -1,5 +1,6 @@
 {
   "description": "Per-project inputs for a PMC that has opted out. ILLUSTRATIVE: Apache Commons has not opted out; this shows the minimal format on real release files.",
+  "parent": "../../baseline/community/java.json",
   "project": {
     "name": "Apache Commons Lang",
     "url": "https://commons.apache.org/proper/commons-lang/",

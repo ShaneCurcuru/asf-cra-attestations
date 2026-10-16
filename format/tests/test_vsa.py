@@ -24,11 +24,10 @@ import pytest
 
 import vsa.assemble as assemble
 import vsa.document as document
+import vsa.settings as settings
 import vsa.signature as signature
 
 _EXAMPLE_DIR = pathlib.Path(__file__).resolve().parent.parent / "examples" / "commons-lang3"
-_BASELINE_PATH = pathlib.Path(__file__).resolve().parent.parent / "baseline" / "asf.json"
-_COMMUNITY_PATH = pathlib.Path(__file__).resolve().parent.parent / "baseline" / "community" / "java.json"
 _SIGNATURE_PATH = pathlib.Path(__file__).resolve().parent / "testdata" / "commons-lang3-3.17.0.jar.asc"
 _GOOD = document.load(_EXAMPLE_DIR / "commons-lang3-3.17.0.vsa.json")
 _MINIMAL = document.load(_EXAMPLE_DIR / "commons-lang3-3.17.0.minimal.vsa.json")
@@ -65,18 +64,34 @@ def test_attestation_is_deterministic_and_matches_example(tmp_path: pathlib.Path
         assert doc[key] == _GOOD[key]
 
 
-def test_attestation_layers_community_baseline() -> None:
-    baseline = document.load(_BASELINE_PATH)
-    project = document.load(_EXAMPLE_DIR / "project.json")
+def test_attestation_follows_parents() -> None:
+    layers = settings.chain(_EXAMPLE_DIR / "project.json")
+    assert [pathlib.Path(layer.source).name for layer in layers] == ["asf.json", "java.json", "project.json"]
     release = document.load(_EXAMPLE_DIR / "release-3.17.0.json")
-    # Without the community baseline, QA.05 has no answer
+    # Pointing the project straight at the ASF baseline drops the Java answer for QA.05
+    project = layers[-1].doc | {"parent": "../../baseline/asf.json"}
     with pytest.raises(document.InputError, match=r"QA\.05"):
-        assemble.attestation(baseline, project, release, ".")
-    # A community baseline may not change the issuer
-    community = document.load(_COMMUNITY_PATH)
-    community["issuer"] = {"name": "Someone else"}
-    with pytest.raises(document.InputError, match="issuer"):
-        assemble.attestation(baseline, project, release, ".", [community])
+        assemble.attestation([layers[0], settings.Layer("project", project)], release, ".")
+
+
+def test_attestation_rejects_change_to_required_field() -> None:
+    layers = settings.chain(_EXAMPLE_DIR / "project.json")
+    release = document.load(_EXAMPLE_DIR / "release-3.17.0.json")
+    # A community baseline may not change the issuer, which the ASF baseline requires
+    community = settings.Layer("java", layers[1].doc | {"issuer": {"name": "Someone else"}})
+    with pytest.raises(document.InputError, match=r"java changes /issuer, which .*asf\.json requires"):
+        assemble.attestation([layers[0], community, layers[2]], release, ".")
+
+
+def test_attestation_from_one_file_without_parent(tmp_path: pathlib.Path) -> None:
+    # Another organisation can keep all its settings in one root file, with nothing required
+    release = document.load(_EXAMPLE_DIR / "release-3.17.0.json")
+    _write_stand_in_files(release, tmp_path)
+    root = tmp_path / "root.json"
+    root.write_text(document.dump(settings.merge(settings.chain(_EXAMPLE_DIR / "project.json"))))
+    assert document.dump(assemble.attestation(settings.chain(root), release, str(tmp_path))) == document.dump(
+        _generate(release, tmp_path)
+    )
 
 
 def test_attestation_minimal_marks_unanswered_not_assessed(tmp_path: pathlib.Path) -> None:
@@ -98,19 +113,19 @@ def test_attestation_minimal_marks_unanswered_not_assessed(tmp_path: pathlib.Pat
     ],
 )
 def test_attestation_rejects_bad_opt_out(change: dict[str, str]) -> None:
-    project = document.load(_EXAMPLE_DIR / "project-minimal.json")
-    project["attestation"].update(change)
+    layers = settings.chain(_EXAMPLE_DIR / "project-minimal.json")
+    layers[-1].doc["attestation"].update(change)
     release = document.load(_EXAMPLE_DIR / "release-3.17.0.json")
     with pytest.raises(document.InputError):
-        assemble.attestation(document.load(_BASELINE_PATH), project, release, ".")
+        assemble.attestation(layers, release, ".")
 
 
 def test_attestation_rejects_missing_answer() -> None:
-    project = document.load(_EXAMPLE_DIR / "project.json")
-    project["controls"].pop("EL.01")
+    layers = settings.chain(_EXAMPLE_DIR / "project.json")
+    layers[-1].doc["controls"].pop("EL.01")
     release = document.load(_EXAMPLE_DIR / "release-3.17.0.json")
     with pytest.raises(document.InputError, match=r"EL\.01"):
-        assemble.attestation(document.load(_BASELINE_PATH), project, release, ".")
+        assemble.attestation(layers, release, ".")
 
 
 def test_check_accepts_examples() -> None:
@@ -133,9 +148,7 @@ def test_fingerprint_reads_issuer() -> None:
 def _generate(
     release: document.Document, directory: pathlib.Path, project_file: str = "project.json"
 ) -> document.Document:
-    project = document.load(_EXAMPLE_DIR / project_file)
-    community = [document.load(_COMMUNITY_PATH)]
-    return assemble.attestation(document.load(_BASELINE_PATH), project, release, str(directory), community)
+    return assemble.attestation(settings.chain(_EXAMPLE_DIR / project_file), release, str(directory))
 
 
 def _write_stand_in_files(release: document.Document, directory: pathlib.Path) -> None:

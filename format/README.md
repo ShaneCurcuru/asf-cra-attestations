@@ -14,9 +14,9 @@ pattern would be `apache/tooling-cra-attestations`.
 | File | What it is |
 | --- | --- |
 | [vsa/schema/vsa-lite.schema.json](vsa/schema/vsa-lite.schema.json) | JSON Schema (draft 2020-12): the format itself, shipped inside the package |
-| [baseline/asf.json](baseline/asf.json) | ASF board baseline: issuer, template, and answers set by Foundation policy (LE.02, QA.03, BR.03, VM.01, VM.02). Rarely changes |
-| [baseline/community/java.json](baseline/community/java.json) | Illustrative community baseline for JVM-only projects (QA.05). Not agreed by any PMCs yet |
-| [examples/commons-lang3/project.json](examples/commons-lang3/project.json) | Per-PMC inputs that rarely change: project, contact, KEYS URL, the remaining answers |
+| [baseline/asf.json](baseline/asf.json) | ASF board baseline, the root of the ASF's settings: issuer, template, answers set by Foundation policy (LE.02, QA.03, BR.03, VM.01, VM.02), and the fields it requires. Rarely changes |
+| [baseline/community/java.json](baseline/community/java.json) | Illustrative community baseline for JVM-only projects (QA.05), whose parent is `asf.json`. Not agreed by any PMCs yet |
+| [examples/commons-lang3/project.json](examples/commons-lang3/project.json) | Per-PMC inputs that rarely change: its parent, project, contact, KEYS URL, the remaining answers |
 | [examples/commons-lang3/release-3.17.0.json](examples/commons-lang3/release-3.17.0.json) | Per-release inputs: version, tag, issue time, file URLs |
 | [examples/commons-lang3/commons-lang3-3.17.0.vsa.json](examples/commons-lang3/commons-lang3-3.17.0.vsa.json) | The generated attestation |
 | [examples/commons-lang3/project-minimal.json](examples/commons-lang3/project-minimal.json) | The same project as if its PMC had opted out (illustrative) |
@@ -25,8 +25,9 @@ pattern would be `apache/tooling-cra-attestations`.
 | [vsa/models.py](vsa/models.py) | Pydantic models generated from the schema, for ATR. Do not edit by hand |
 | [scripts/models_generate.py](scripts/models_generate.py) | Regenerates `vsa/models.py`, or checks it with `--check` |
 | [vsa/collect/](vsa/collect/README.md) | The collector (`vsa-collect`): drafts `project.json` and `release-X.json` from public ASF data |
-| [vsa/](vsa/) | Python package: `assemble`, `document`, `digests`, `signature`, `intoto`, and `cli` (the `vsa` command) |
-| [tests/test_vsa.py](tests/test_vsa.py) | pytest unit tests |
+| [vsa/settings.py](vsa/settings.py) | Loads a settings file and its chain of parents, merges them, and enforces required fields |
+| [vsa/](vsa/) | Python package: `assemble`, `settings`, `document`, `digests`, `signature`, `intoto`, and `cli` (the `vsa` command) |
+| [tests/](tests/) | pytest unit tests |
 | [pyproject.toml](pyproject.toml) | Package metadata, the `vsa` entry point, and ruff, pyright and pytest settings |
 
 ## Code conventions
@@ -56,11 +57,16 @@ ATR can import the modules directly, in its own import style, with no subprocess
 import vsa.assemble as assemble
 import vsa.document as document
 import vsa.intoto as intoto
+import vsa.settings as settings
 
-doc = assemble.attestation(baseline, project, release, release_dir, community=[java_baseline])
+layers = settings.chain(project_path, include=[baseline_dir])  # project.json and its parents, root first
+doc = assemble.attestation(layers, release, release_dir)
 errors = document.check(doc)
 statement = intoto.wrap(doc)
 ```
+
+If ATR keeps the settings in its own storage rather than in files, it can pass the documents in,
+root first, as `settings.Layer(name, doc)`; the required fields are enforced either way.
 
 Every function is synchronous and only reads local files. `digests.verify` is the one call that
 can download, and only when it is not given a local directory.
@@ -94,11 +100,13 @@ round-trip through the models unchanged. PMCs who only run the `vsa` command don
 
 ## How a PMC would use it
 
-1. The ASF maintains `baseline/asf.json` once, for everyone.
-2. Optionally, a group of similar projects agrees a community baseline in `baseline/community/`.
-3. Each PMC keeps a `project.json` (for example in its repo) with its contact and its answers.
+1. The ASF maintains `baseline/asf.json` once, for everyone. It has no parent.
+2. Optionally, a group of similar projects agrees a community baseline in `baseline/community/`,
+   whose `parent` is `asf.json`.
+3. Each PMC keeps a `project.json` (for example in its repo) with its contact and its answers, and a
+   `parent` naming `asf.json` or a community baseline.
 4. At release time the release manager writes a short `release-X.json` naming the files, then runs
-   `vsa generate` against the directory they already have the signed artifacts in (for example
+   `vsa generate project.json ...` against the directory they already have the signed artifacts in (for example
    their `dist/dev` checkout). The tool hashes every file, reads the key fingerprint out of each
    `.asc`, reads the SBOM serial number, merges the answers, validates the result, and fails if any
    of the 19 controls has no answer.
@@ -144,19 +152,44 @@ to run if `reviewBy` is more than 12 months after `decided` or earlier than the 
 date. The process is in section 6 of
 [asf-attestation-process.md](../process/asf-attestation-process.md).
 
-**Answers come in layers.** Control answers are merged in three layers, each replacing the
-previous one's answer for the same control, whole:
+**Answers come in layers, from a chain of parents.** Any settings file may name its `parent`,
+and that parent may name its own. `vsa generate` loads the chain and merges it from the root down,
+so the file named on the command line wins. Nothing in the code assumes which file is the root; at
+the ASF the chain is:
 
-1. **ASF board baseline** (`baseline/asf.json`): set for the whole Foundation, and rarely changes.
-   It is the only layer that sets the issuer and template.
-2. **Community baselines** (`baseline/community/*.json`, optional, any number, applied in order):
-   answers shared by projects with a similar governance style or community conventions, for example
-   JVM projects, or C and database projects. Projects opt in with `vsa generate -c FILE`. A community
-   baseline may only contain `name`, `description` and `controls`; anything else is rejected.
-3. **Project** (`project.json`): the PMC's own answers, which always win.
+1. **ASF board baseline** (`baseline/asf.json`): the root. Set for the whole Foundation, and
+   rarely changes. It sets the issuer and template, and requires that nobody below changes them.
+2. **Community baselines** (`baseline/community/*.json`, optional, any number): answers shared by
+   projects with a similar governance style or community conventions, for example JVM projects, or
+   C and database projects. A community baseline's parent is `asf.json` or another community
+   baseline.
+3. **Project or product** (`project.json`, or one file per product): the PMC's own answers. Its
+   parent is `asf.json` or a community baseline. A PMC with several products can add a PMC-wide
+   file between them.
 
-This is a concept for now. `baseline/community/java.json` only shows the mechanism, using QA.05,
-and the Commons Lang example inherits its QA.05 answer from it.
+Another organisation can build its own hierarchy the same way: a root file of its own, with
+whatever levels it needs below it.
+
+How the layers merge:
+
+- **Parents are files.** `parent` is a path relative to the file that names it. When it is not
+  there, `vsa generate -I DIR` (repeatable) looks in DIR, so a `project.json` in a PMC's own
+  repository can say `"parent": "asf.json"` and be generated with `-I` pointing at this
+  repository's `baseline/`. A loop of parents is an error.
+- **One level deep.** Each top-level object is merged one level deep: a lower file replaces each
+  key it sets, whole. So a control is replaced by its ID, whole, and an issuer field by its name.
+  Any other value is replaced whole. `name`, `description`, `parent` and `required` describe one
+  file and are not inherited.
+- **Required fields are locked.** A file may list fields under `required`, as JSON Pointers
+  (RFC 6901), for example `"/issuer"` or `"/controls/VM.01/status"`. It is then an error for any
+  file below to change that field's value; restating the same value is allowed. A lower file can
+  add its own required fields but never remove one. A required field must be set by the file that
+  requires it or by one of its parents. Without `required`, any file can change anything, as before.
+  `vsa generate` reports every violation in every file at once.
+
+`baseline/community/java.json` only shows the mechanism, using QA.05, and the Commons Lang example
+inherits its QA.05 answer from it. The required list in `baseline/asf.json` is a proposal; see
+"Issues to resolve with design".
 
 **Built for the light template, ready for a heavy one.** The work targets the Tier 1 light
 template. If a Tier 2 heavy template is needed later, it can be added without reworking the tool:
@@ -192,9 +225,8 @@ non-author") and **EL.01** is `not_met` (no per-version end-of-life policy).
 ```sh
 cd format
 pip install .        # or: uv sync; add [models] for the pydantic models
-vsa generate baseline/asf.json examples/commons-lang3/project.json \
-    examples/commons-lang3/release-3.17.0.json DIR_WITH_RELEASE_FILES \
-    -c baseline/community/java.json -o out.vsa.json
+vsa generate examples/commons-lang3/project.json \
+    examples/commons-lang3/release-3.17.0.json DIR_WITH_RELEASE_FILES -o out.vsa.json
 vsa validate examples/commons-lang3/commons-lang3-3.17.0.vsa.json
 vsa verify   examples/commons-lang3/commons-lang3-3.17.0.vsa.json  # downloads ~1.9 MB
 vsa intoto   examples/commons-lang3/commons-lang3-3.17.0.vsa.json
@@ -208,14 +240,21 @@ digests and fingerprints matched the values I had checked by hand. The unit test
 and the minimal example validate; 15 broken variants are rejected (among them a missing control,
 unexplained `not_met`, MD5 digest, dangling `sbomRefs`, `not_assessed` or `optOut` in a full
 attestation, and a minimal one without `optOut`); a missing answer stops generation; and a lapsed,
-too-long or unknown opt-out stops generation; and a community baseline is layered in, and is
-rejected if it tries to set the issuer. The full suite, including the models tests, passes under
-pytest (29 tests). `uv build` produced a wheel that includes the schema, and the installed `vsa`
+too-long or unknown opt-out stops generation; the example's chain of parents is followed, a
+community baseline that changes the issuer is rejected, and one root file with no parent gives the
+same attestation as the chain. `tests/test_settings.py` covers parents found through `-I`, parent
+loops, one-level merging, unchanged and partly locked values, every change to a required field
+being reported, and malformed `required` lists. The full suite, including the models tests and the
+collector, passes under pytest (61 passed, 1 skipped). `uv build` produced a wheel that includes the schema, and the installed `vsa`
 command validated the example. Python 3.14 is not installed in my sandbox, so the code ran on 3.13 and
 pyright type-checked it against 3.14.
 
 ## Changes
 
+- **Tool, unreleased:** settings are layered through `parent` links instead of a fixed
+  `asf.json` root plus `-c` community files, and any layer can mark fields `required`.
+  `vsa generate` now takes `SETTINGS RELEASE DIR [-I DIR]...`, and `assemble.attestation` takes the
+  layers, root first. The attestation schema is unchanged.
 - **0.3.0:** added the `partial` control status, which needs an `explanation`. The example uses it
   for QA.07, since Commons reviews commits after they land (commit-then-review).
 - **0.2.0:** added `scope` (required), `optOut`, and the `not_assessed` control status for the PMC
@@ -224,8 +263,14 @@ pyright type-checked it against 3.14.
 
 ## Issues to resolve with design
 
-1. **Which answers belong in the ASF baseline.** The draft baseline covers LE.02, QA.03, BR.03, VM.01
-   and VM.02. Legal and Security would need to agree to own those answers for every PMC. Related:
+1. **Which answers belong in the ASF baseline, and which are required.** The draft baseline covers
+   LE.02, QA.03, BR.03, VM.01 and VM.02. Legal and Security would need to agree to own those answers
+   for every PMC. *Proposed, awaiting Shane's confirmation:* the baseline requires `/template` and
+   `/issuer` (the ASF is always the issuer, of one template), `/controls/LE.02` and
+   `/controls/VM.02` whole (Foundation licensing and vulnerability-handling policy, with nothing
+   project-specific to add), and only the `status` of QA.03, BR.03 and VM.01, so that no PMC can
+   answer a policy-mandated item as unmet while each can still cite its own security page, KEYS file
+   or security list. Related:
    which community baselines to define, who agrees and maintains each one, and which answers move
    into them.
 2. **Commit-then-review vs. QA.07.** QA.07 asks that every change be reviewed by a non-author, and
@@ -243,9 +288,9 @@ pyright type-checked it against 3.14.
    - Keep a stable apache.org page that maps any past attestation to its current chair.
 4. **Several products per PMC.** Some PMCs ship products with different languages, dependencies
    or security backgrounds, so one `project.json` per PMC is not enough. A PMC may keep several
-   answer files (for example `product1.json`, `product2.json`). To decide: how a release names the
-   product file it uses, whether product files can share PMC-wide answers (another layer between the
-   community baselines and the product file), and where the files live. *Decided:* CRA answers
+   answer files (for example `product1.json`, `product2.json`). Product files can share PMC-wide
+   answers by naming a PMC-wide file as their `parent`. To decide: how a release names the product
+   file it uses, and where the files live. *Decided:* CRA answers
    live in these per-PMC files, not in `.asf.yaml` (Shane, 2026-10-16).
 
 ## Next tasks
