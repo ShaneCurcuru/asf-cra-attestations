@@ -39,6 +39,7 @@ code is a proposal for the ASF Tooling team, who would decide where it lives (wo
 | [Collector](format/vsa/collect/README.md) | How `vsa-collect` drafts the input files from public ASF data, where each value comes from, swapping data sources, and results on Tomcat, Commons Lang and httpd |
 | [Implementation plan](tooling/implementation-plan.md) | Repository layout, data sources, per-control resolvers, and milestones M0 to M5 |
 | [Tier 1 tooling survey](tooling/tier1-tooling-survey.md) | Which checklist items public ASF data and ATR can answer, and the approaches compared. Written before the format was packaged, so some file names in it are older |
+| [ASF libraries to reuse](tooling/asf-dependencies.md) | Which ASF Tooling and Infra libraries (asfquart, asfpy, asfyaml) and ATR utilities vsa should reuse for UI, integrations and data |
 
 ## Python tools
 
@@ -80,7 +81,7 @@ ruff check . && pyright
 ```
 README.md          this overview
 process/           the release attestation process
-tooling/           the tooling survey and implementation plan
+tooling/           the tooling survey, implementation plan and ASF library review
 format/            the Python package (vsa and vsa.collect), schema, baselines, examples and tests
 ```
 
