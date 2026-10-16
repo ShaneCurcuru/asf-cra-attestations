@@ -126,3 +126,39 @@ repositories, lifecycle page, version scheme) from ATR first, so PMCs never ente
 A PMC may ship several products with different languages or security backgrounds, so a PMC can have several answer
 files (for example `product1.json`, `product2.json`). Designs must allow one file per product, not one per PMC. This
 is tracked in the format README under "Issues to resolve with design".
+
+## Questions For Tooling Team
+
+Everything above is read from public repositories. Tooling, Infrastructure and Security will have requirements that are
+not publicly documented, so each item below needs human review with the named team before deployment.
+
+1. **Note:** this needs review with tooling team to confirm (or change) assumptions around the overall tooling strategy
+   of which level of dependencies are in which tools. For example, vsa might display its own UI for testing/training
+   purposes independently of ATR; also the tooling team is coming up with new ways to build tools we may need to adapt.
+   Similarly, if external users are interested in vsa, some dependencies might need to change to non-ASF-internal
+   versions.
+2. **Tooling: packaging and release of vsa itself.** Is vsa published to PyPI, or consumed as a git dependency (ATR
+   pulls `asfquart` from git `main`)? How is vsa released and signed, and does it go through ATR like any ASF release?
+3. **Tooling: Python version floor.** vsa pins `~=3.14` to match ATR. PMCs running vsa standalone, or in their own CI,
+   may need an older floor (`asfquart` and `asfyaml` support 3.10, the ATR client 3.12).
+4. **Tooling: ATR integration points.** Which ATR phases (compose, vote, finish) call vsa, where attestations are
+   stored (`attestable/` looks intended for this), and whether ATR passes its data in or vsa fetches it.
+5. **Tooling: ATR API stability.** The collector would read `/api/project/get`, `/api/project/releases` and
+   `/api/cle/project`. The ATR client README says the API schema is not stable yet. Which endpoints may we rely on?
+6. **Tooling and Security: signing.** Who signs attestations (release manager, ATR, or a foundation key
+   countersignature), who holds the keys, and whether ATR's `sealing.py` pattern over `rfc8785` JSON is the one to
+   reuse.
+7. **Infrastructure: where standalone runs happen.** Which ASF host or service runs vsa outside ATR (cron,
+   `pipservice`, GitHub Actions), what outbound access it has (Whimsy, projects.apache.org, ATR), and the timeline and
+   schema for RosterTool replacing Whimsy people data.
+8. **Infrastructure: identifiers and hosting.** Whether `tooling.apache.org/cra/...` may serve the schema and
+   `predicateType` URLs, and who owns that path.
+9. **Infrastructure and Security: secrets.** If vsa needs any token (for example an ATR PAT), confirm storage
+   (asfyaml keeps its ATR token in a puppet-managed file) and the format from the draft ASF scannable token standard.
+10. **Security: threat model and review.** vsa needs its own threat model (ATR keeps `THREATS.md`) and a review of
+    trust boundaries: who can change a PMC's answer files, how ATR data is trusted, and the hand-written OpenPGP packet
+    parsing in `vsa/signature.py`.
+11. **Security: baseline answers.** Which vulnerability-handling answers (VM.01, VM.02) Security will own in the ASF
+    baseline for every PMC, and the rules for `security_contact` and the AU.02 contact.
+12. **All three teams: dependency policy.** Whether vsa must adopt ATR's controls (uv lock freshness, `exclude-newer`
+    cooldown, `pip-audit`) and whether there is an approved package list beyond what ATR already uses.
