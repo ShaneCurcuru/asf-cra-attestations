@@ -90,6 +90,13 @@ The Python code follows the
 [Apache Trusted Releases code conventions](https://github.com/apache/tooling-trusted-releases/blob/main/atr/docs/code-conventions.md),
 so it can move into an ASF repository, or be imported by ATR, without restyling.
 
+## Future: use outside the ASF
+
+We hope to generalize this tool and format later so any open source project or steward can use them for CRA
+attestations, not just the ASF. Documentation for projects outside the ASF will come after the ASF rollout. We are
+looking for contributors from outside the ASF: if your project or foundation needs CRA attestations too, we would like
+to hear from you.
+
 ## Licence
 
 Apache License 2.0; see [LICENSE](LICENSE).

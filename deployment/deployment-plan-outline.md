@@ -196,8 +196,10 @@ CRA anchor dates: vulnerability reporting obligations apply from 11 September 20
 
 ## 7. External documentation for any open source project
 
-Written so that `vsa` could later become a general tool, and possibly its own top-level project, without rewriting
-its docs.
+**Deferred (Shane, 2026-10-16):** these docs are written after the ASF rollout. Until then the repository
+[README](../README.md#future-use-outside-the-asf) says we hope to generalize the tool and welcome contributors from
+outside the ASF. The list below is what those docs will cover, so that `vsa` could later become a general tool, and
+possibly its own top-level project, without rewriting its docs.
 
 - **Generic CRA attestation guide:** what a steward or project attests, how the Tier 1 template maps to practice,
   how to answer each control, independent of the ASF.
@@ -215,5 +217,3 @@ its docs.
 2. Which phase dates should the plan commit to against the CRA dates?
 3. Which PMCs should pilot? Default: Commons, Tomcat and httpd, matching the test fixtures.
 4. Should `vsa` releases be published to PyPI, or only installed by ATR from the ASF release?
-5. Should the external documentation be written now, alongside the ASF docs, or after general rollout? Default: an
-   outline now, written after phase 3.
