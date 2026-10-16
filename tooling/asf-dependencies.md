@@ -73,7 +73,7 @@ metadata block holds `key`, `committee`, `name`, `description`, `homepage`, `lif
 
 **For vsa:** this is already the PMC-authored, version-controlled path for most of the "who and where" answers our
 attestation needs (security contact, threat model, lifecycle page, repositories, version cycles). It overlaps with
-`project.json`. See the open question below.
+`project.json`. vsa reads those fields from ATR; CRA answers stay in `project.json` (see the decision below).
 
 ### apache/tooling-docs (Tooling)
 
@@ -108,7 +108,7 @@ being another Tooling app to borrow patterns from.
 
 | Area | Today in vsa | Recommendation |
 |---|---|---|
-| Project metadata | `project.json` plus Whimsy and projects.apache.org providers | Add an ATR provider (public API) as the first source for the fields `.asf.yaml` already covers; keep `project.json` for CRA-only answers |
+| Project metadata | `project.json` plus Whimsy and projects.apache.org providers | Add an ATR provider (public API) as the first source for the fields `.asf.yaml` already covers; keep `project.json` (one per product) for CRA-only answers |
 | HTTP | stdlib `urllib` with an on-disk fixture cache | Keep. It stays deterministic and dependency-free. When running inside ATR, accept data passed in by ATR instead of fetching |
 | Signature parsing | hand-written packet parsing in `vsa/signature.py` | Fine for reading the issuer fingerprint. For any real verification use `rpgp-py`, as ATR and its client do |
 | JSON output | `json.dumps(indent=2)` | Fine for display. Anything we hash or sign must be `rfc8785` canonical JSON, as in ATR's `sealing.py` |
@@ -117,10 +117,12 @@ being another Tooling app to borrow patterns from.
 | Web UI | none | ATR pages (asfquart, Jinja2, htpy, Pydantic forms, Bootstrap) |
 | Logging | `print` | `structlog` if we add structured logs, so they merge with ATR's |
 
-## Open question for the design
+## Decided: where PMCs author CRA answers
 
-**Where do PMCs author their CRA answers?** Option A keeps `project.json` in our format. Option B proposes new
-optional keys (for example a `cra:` map) in the `.asf.yaml` `project:` block, so PMCs edit one file, Infra validates it
-on push, and ATR stores it next to the metadata it already syncs. Option B means one source of truth and no new file
-for PMCs to learn, but it needs agreement from Infra and Tooling. Default until decided: keep `project.json`, and
-read every overlapping field from ATR first.
+Shane (review on PR #1, 2026-10-16): PMCs author CRA data in `project.json` (or a similar new per-PMC file), **not** in
+`.asf.yaml`. vsa still reads the fields that `.asf.yaml` already syncs to ATR (security contact, threat model links,
+repositories, lifecycle page, version scheme) from ATR first, so PMCs never enter them twice.
+
+A PMC may ship several products with different languages or security backgrounds, so a PMC can have several answer
+files (for example `product1.json`, `product2.json`). Designs must allow one file per product, not one per PMC. This
+is tracked in the format README under "Issues to resolve with design".
