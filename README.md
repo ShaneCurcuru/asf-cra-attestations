@@ -38,6 +38,7 @@ code is a proposal for the ASF Tooling team, who would decide where it lives (wo
 | [VSA-lite format](format/README.md) | The JSON format and its design, how a PMC and ATR use the `vsa` package, code conventions, the Commons Lang example, and the issues still to resolve with design |
 | [Collector](format/vsa/collect/README.md) | How `vsa-collect` drafts the input files from public ASF data, where each value comes from, swapping data sources, and results on Tomcat, Commons Lang and httpd |
 | [Implementation plan](tooling/implementation-plan.md) | Repository layout, data sources, per-control resolvers, and milestones M0 to M5 |
+| [Deployment plan outline](deployment/deployment-plan-outline.md) | The areas a rollout across the ASF has to cover: ATR integration and testing, process documents per audience, training and self-testing, adoption, phases, and external docs |
 | [Tier 1 tooling survey](tooling/tier1-tooling-survey.md) | Which checklist items public ASF data and ATR can answer, and the approaches compared. Written before the format was packaged, so some file names in it are older |
 | [ASF libraries to reuse](tooling/asf-dependencies.md) | Which ASF Tooling and Infra libraries (asfquart, asfpy, asfyaml) and ATR utilities vsa should reuse for UI, integrations and data |
 
@@ -81,13 +82,21 @@ ruff check . && pyright
 ```
 README.md          this overview
 process/           the release attestation process
-tooling/           the tooling survey, implementation plan and ASF library review
+tooling/           the tooling survey and implementation plan
+deployment/        the deployment plan for rolling the tool out across the ASF
 format/            the Python package (vsa and vsa.collect), schema, baselines, examples and tests
 ```
 
 The Python code follows the
 [Apache Trusted Releases code conventions](https://github.com/apache/tooling-trusted-releases/blob/main/atr/docs/code-conventions.md),
 so it can move into an ASF repository, or be imported by ATR, without restyling.
+
+## Future: use outside the ASF
+
+We hope to generalize this tool and format later so any open source project or steward can use them for CRA
+attestations, not just the ASF. Documentation for projects outside the ASF will come after the ASF rollout. We are
+looking for contributors from outside the ASF: if your project or foundation needs CRA attestations too, we would like
+to hear from you.
 
 ## Licence
 
