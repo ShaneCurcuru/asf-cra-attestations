@@ -241,6 +241,12 @@ pyright type-checked it against 3.14.
    - Make contact.email required, and always a role address (private@project.a.o?).
    - Add ASF contact to AU.01 for authority requests, a role alias owned by VP Legal or VP Security.
    - Keep a stable apache.org page that maps any past attestation to its current chair.
+4. **Several products per PMC.** Some PMCs ship products with different languages, dependencies
+   or security backgrounds, so one `project.json` per PMC is not enough. A PMC may keep several
+   answer files (for example `product1.json`, `product2.json`). To decide: how a release names the
+   product file it uses, whether product files can share PMC-wide answers (another layer between the
+   community baselines and the product file), and where the files live. *Decided:* CRA answers
+   live in these per-PMC files, not in `.asf.yaml` (Shane, 2026-10-16).
 
 ## Next tasks
 

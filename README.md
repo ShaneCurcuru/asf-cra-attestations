@@ -40,6 +40,7 @@ code is a proposal for the ASF Tooling team, who would decide where it lives (wo
 | [Implementation plan](tooling/implementation-plan.md) | Repository layout, data sources, per-control resolvers, and milestones M0 to M5 |
 | [Deployment plan outline](deployment/deployment-plan-outline.md) | The areas a rollout across the ASF has to cover: ATR integration and testing, process documents per audience, training and self-testing, adoption, phases, and external docs |
 | [Tier 1 tooling survey](tooling/tier1-tooling-survey.md) | Which checklist items public ASF data and ATR can answer, and the approaches compared. Written before the format was packaged, so some file names in it are older |
+| [ASF libraries to reuse](tooling/asf-dependencies.md) | Which ASF Tooling and Infra libraries (asfquart, asfpy, asfyaml) and ATR utilities vsa should reuse for UI, integrations and data |
 
 ## Python tools
 
