@@ -18,9 +18,11 @@ code is a proposal for the ASF Tooling team, who would decide where it lives (wo
 - **The ASF issues it, the PMC approves it.** The ASF is the issuing steward, the PMC Chair is the
   contact, and the attestation is approved in the same vote as the release and signed by the
   release manager. An optional foundation key can countersign it.
-- **Answers come in layers.** An ASF board baseline answers what Foundation policy already
-  settles. Optional community baselines (for example, Java projects) come next. Each PMC's
-  `project.json` comes last and always wins.
+- **Answers come in layers.** Each settings file can name a parent, which is loaded first. At the
+  ASF, the board baseline answers what Foundation policy already settles, optional community
+  baselines (for example, Java projects) come next, and each PMC's `project.json` comes last and
+  wins, except for fields a parent marks as required. Other organisations can set up their own
+  hierarchy.
 - **Deterministic tools, no AI.** Plain Python that runs on a laptop or a basic ASF instance. The
   same inputs always give byte-identical output, and a missing answer stops generation rather than
   being guessed.
@@ -73,7 +75,7 @@ cd format
 uv sync --group test             # or: pip install '.[models]' pytest
 vsa validate examples/commons-lang3/commons-lang3-3.17.0.vsa.json
 vsa-collect --help
-pytest                           # 50 tests, all offline
+pytest                           # 62 tests, all offline
 ruff check . && pyright
 ```
 

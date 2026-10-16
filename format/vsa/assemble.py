@@ -14,7 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-"""Assembling an attestation from ASF, project and release inputs and the release files."""
+"""Assembling an attestation from layered settings, release inputs and the release files."""
 
 import datetime
 import json
@@ -25,35 +25,33 @@ from typing import Final
 
 import vsa.digests as digests
 import vsa.document as document
+import vsa.settings as settings
 import vsa.signature as signature
 
-_COMMUNITY_BASELINE_KEYS: Final[frozenset[str]] = frozenset({"name", "description", "controls"})
 _OPT_OUT_FIELDS: Final[tuple[str, ...]] = ("reason", "statement", "decided", "decisionRef", "reviewBy")
 
 
 def attestation(
-    baseline: document.Document,
-    project: document.Document,
+    layers: Sequence[settings.Layer],
     release: document.Document,
     directory: str,
-    community: Sequence[document.Document] = (),
 ) -> document.Document:
-    """Merge the inputs and the release files in directory into one attestation.
+    """Merge the settings layers, the release inputs and the release files in directory into one attestation.
 
-    Controls are layered: the ASF baseline first, then each community baseline in order, then the
-    project. A later layer replaces an earlier layer's control with the same ID, whole.
-    Community baselines may only carry controls, so the issuer and template always come from the ASF.
-    When the project has opted out, every control that is still unanswered becomes not_assessed.
+    layers runs root first, as settings.chain returns it: at the ASF, the ASF baseline, then any
+    community baseline, then the project or product file. A later layer replaces an earlier layer's
+    control with the same ID, whole, unless an earlier layer requires it (see vsa.settings).
+    When the settings opt out, every control that is still unanswered becomes not_assessed.
     The same inputs and files always give the same document.
     """
+    project = settings.merge(layers)
     keys_uri = project["keysUri"]
     opt_out = _opt_out(project, release)
     # Check every answer before reading any release file, so input errors are reported first
-    layers = [baseline, *(_community_controls(c) for c in community), project]
-    controls = _controls(layers, minimal=(opt_out is not None))
+    controls = _controls(project.get("controls", {}), minimal=(opt_out is not None))
     doc: document.Document = {
         "schemaVersion": document.SCHEMA_VERSION,
-        "template": baseline["template"],
+        "template": project["template"],
         "attestationId": _attestation_id(project, release),
         "scope": "full" if (opt_out is None) else "minimal",
     }
@@ -63,7 +61,7 @@ def attestation(
     for key in ("validUntil", "supersedes", "comment"):
         if key in release:
             doc[key] = release[key]
-    doc["issuer"] = _issuer(baseline, project)
+    doc["issuer"] = _issuer(project)
     # AU.02 names the PMC chair, as the official representative of the PMC
     # TODO: Ask whether a PMC may optionally name the release manager instead, as the person who ran the build
     doc["contact"] = project["contact"]
@@ -97,37 +95,26 @@ def _attestation_id(project: document.Document, release: document.Document) -> s
     return f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, seed)}"
 
 
-def _community_controls(community: document.Document) -> document.Document:
-    extra = sorted(set(community) - _COMMUNITY_BASELINE_KEYS)
-    if extra:
-        name = community.get("name", "unnamed")
-        raise document.InputError(f"community baseline {name} may only set controls, not: {', '.join(extra)}")
-    return community
-
-
-def _controls(layers: Sequence[document.Document], minimal: bool) -> document.Document:
-    merged: document.Document = {}
-    for layer in layers:
-        merged.update(layer.get("controls", {}))
+def _controls(merged: document.Document, minimal: bool) -> document.Document:
+    merged = dict(merged)
     if minimal:
         for control_id in document.CONTROL_IDS:
             merged.setdefault(control_id, {"status": "not_assessed"})
     missing = [c for c in document.CONTROL_IDS if c not in merged]
     if missing:
-        raise document.InputError(f"no answer in any baseline or the project for: {', '.join(missing)}")
+        raise document.InputError(f"no answer in any settings file for: {', '.join(missing)}")
     unknown = sorted(set(merged) - set(document.CONTROL_IDS))
     if unknown:
         raise document.InputError(f"unknown control IDs: {', '.join(unknown)}")
     return {c: merged[c] for c in document.CONTROL_IDS}
 
 
-def _issuer(baseline: document.Document, project: document.Document) -> document.Document:
-    issuer = dict(baseline["issuer"])
+def _issuer(project: document.Document) -> document.Document:
+    issuer = dict(project["issuer"])
     if "relationship" in issuer:
         issuer["relationship"] = issuer["relationship"].format(
             project=project["project"]["name"], pmc=project.get("pmc", "")
         )
-    issuer.update(project.get("issuer", {}))
     return issuer
 
 

@@ -15,20 +15,20 @@ Controls the collector cannot answer are left out of the draft. That way `vsa ge
 # once per project, then review and commit project.json
 vsa-collect --cache cache init tomcat --ref 11.0.27 --version 11.0.27 \
     --dist-dir https://downloads.apache.org/tomcat/tomcat-11/v11.0.27/src/ \
-    -o project.json --report report.json
+    --parent asf.json -I baseline -o project.json --report report.json
 
 # per release (--issued is the attestation date, normally the vote-pass date; never the clock)
 vsa-collect --cache cache release 11.0.27 --issued 2026-10-06T00:00:00Z --tag 11.0.27 \
     --dist-dir https://downloads.apache.org/tomcat/tomcat-11/v11.0.27/src/ -o release-11.0.27.json
 
-vsa generate baseline/asf.json project.json release-11.0.27.json DIR_WITH_FILES -o out.vsa.json
+vsa generate project.json release-11.0.27.json DIR_WITH_FILES -I baseline -o out.vsa.json
 ```
 
 `--cache DIR` keeps every network response, including 404s and git file lists. Adding `--offline` repeats a run from the cache alone, with byte-identical output. Without the cache, the output still changes only when the ASF data it reads changes.
 
 Options worth knowing:
 
-- `--baseline FILE` (repeatable, broadest first) names the baselines the project inherits: the ASF baseline, then any community baseline, such as one Java projects agree on. Controls a baseline answers are left out of the draft, even when the collector found something, because a project answer would replace the agreed answer whole. The report says which baseline answers each control and what the collector found anyway. A control the rules expect from the ASF baseline, but that no given baseline answers, is listed for the PMC. This matches the layering the format work is adding to `vsa generate` (`baseline/community/`).
+- `--parent FILE` names the draft's parent, such as `asf.json` or a community baseline that Java projects agree on, and is written into the draft as its `parent`. It is found the way `vsa generate` will find it: next to the output file, or else in each `-I DIR`. Controls the parent or any of its own parents answers are left out of the draft, even when the collector found something, so that the agreed answer stays in one place. The report says which file answers each control and what the collector found anyway. A control the rules expect from the ASF baseline, but that no parent answers, is listed for the PMC.
 - `--git-url` names the GitHub repository when `projects.json` lists none. httpd needs this, because it lists only Subversion.
 - `--source 'GLOB'` names the source package when its file name does not say so, for example `httpd-2.4.69.tar.gz`. Without it, `release` fails rather than guessing which file is the official release.
 - `--records FILE` (repeatable) replaces single record fields with values from another system. See "Swapping data sources" below.
@@ -69,7 +69,7 @@ Download listings, KEYS and the git repository are read directly. They are files
 | Left for the PMC | GV.02, QA.01, QA.07, EL.01 | GV.02, QA.07, BR.01, EL.01 | GV.01, GV.02, QA.01, QA.05 (C), QA.07, EL.01 |
 | Contact, VCS, KEYS found | yes | yes | yes |
 
-For Tomcat, I downloaded the real source packages and signatures, answered the four open controls with test values, and ran `vsa generate`. It produced a valid attestation, byte-identical on two runs. On the unanswered draft, `vsa generate` stops with `no answer in baseline or project for: GV.02, QA.01, QA.07, EL.01`.
+For Tomcat, I downloaded the real source packages and signatures, answered the four open controls with test values, and ran `vsa generate`. It produced a valid attestation, byte-identical on two runs. On the unanswered draft, `vsa generate` stops with `no answer in any settings file for: GV.02, QA.01, QA.07, EL.01`.
 
 ## Checks
 
@@ -80,7 +80,7 @@ With the collector merged into `format/`, all of the following pass:
 - ATR's `scripts/interface_order.py` and `scripts/interface_privacy.py`,
 - `pytest`: the format package's tests plus 21 collector tests.
 
-The new tests run offline from `tests/fixtures/collect/cache`. Those are real responses recorded on 2026-10-15, trimmed to three projects, top-level files, and placeholder KEYS bodies. They check that each recorded command reproduces the golden files in `tests/fixtures/collect/golden/` byte for byte. They also check baseline layering, swapping a source for a stand-in RosterTool and ATR, and field overlays, and they cover the failure cases: a missing signature, no identifiable source package, a missing cache entry when offline, and a draft that `vsa generate` must refuse.
+The new tests run offline from `tests/fixtures/collect/cache`. Those are real responses recorded on 2026-10-15, trimmed to three projects, top-level files, and placeholder KEYS bodies. They check that each recorded command reproduces the golden files in `tests/fixtures/collect/golden/` byte for byte. They also check layering through parent files, swapping a source for a stand-in RosterTool and ATR, and field overlays, and they cover the failure cases: a missing signature, no identifiable source package, a missing cache entry when offline, and a draft that `vsa generate` must refuse.
 
 ## Notes for the format work
 

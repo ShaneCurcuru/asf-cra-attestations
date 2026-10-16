@@ -1,5 +1,6 @@
 {
   "description": "Per-project inputs maintained by the PMC. Stable across releases.",
+  "parent": "../../baseline/community/java.json",
   "project": {
     "name": "Apache Commons Lang",
     "url": "https://commons.apache.org/proper/commons-lang/",
