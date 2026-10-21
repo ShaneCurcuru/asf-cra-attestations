@@ -75,14 +75,14 @@ class Issuer(BaseModel):
 
 class Contact(BaseModel):
     """
-    AU.02: the person issuing the attestation on the issuer's behalf, and their role. For the ASF this is the PMC chair, as the official representative of the PMC.
+    AU.02: who speaks for the issuer about this attestation. For the ASF this is the PMC chair, as the official representative of the PMC, named by role; the person's name is included only when the PMC chooses to (attestation.contactStyle 'name' in its settings).
     """
 
     model_config = ConfigDict(
         extra="forbid",
         populate_by_name=True,
     )
-    name: str = Field(..., min_length=1)
+    name: str | None = Field(None, min_length=1)
     role: str = Field(..., min_length=1)
     email: EmailStr | None = None
 
@@ -457,6 +457,32 @@ class OptOut(BaseModel):
     )
 
 
+class Input(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+        populate_by_name=True,
+    )
+    role: Literal["settings", "release"]
+    name: str = Field(..., min_length=1)
+    sha512: str = Field(..., pattern="^[0-9a-f]{128}$")
+
+
+class Inputs(RootModel[list[Input]]):
+    """
+    The input files the attestation was generated from, root settings file first, then the release file, each with the SHA-512 of its bytes. Lets an auditor show exactly which baseline and answers were used.
+    """
+
+    root: list[Input] = Field(
+        ...,
+        description=(
+            "The input files the attestation was generated from, root settings file"
+            " first, then the release file, each with the SHA-512 of its bytes. Lets an"
+            " auditor show exactly which baseline and answers were used."
+        ),
+        min_length=1,
+    )
+
+
 class AttestationId(RootModel[str]):
     root: str = Field(
         ...,
@@ -515,7 +541,7 @@ class Attestation(BaseModel):
         populate_by_name=True,
     )
     field_schema: str | None = Field(None, alias="$schema")
-    schema_version: Literal["0.3.0"] = Field(
+    schema_version: Literal["0.4.0"] = Field(
         ...,
         alias="schemaVersion",
         description="Version of this schema the document conforms to.",
@@ -549,8 +575,16 @@ class Attestation(BaseModel):
         None,
         description=("attestationId values this document replaces (e.g. a corrected re-issue)."),
     )
-    comment: str | None = Field(None, description="Free-text note from the issuer. Not interpreted by tooling.")
+    comment: str | None = Field(
+        None,
+        description=(
+            "Free-text note from the issuer, at most 500 characters. Not interpreted by"
+            " tooling; release tooling shows it to voters word for word."
+        ),
+        max_length=500,
+    )
     issuer: Issuer
     contact: Contact
     subject: Subject
     controls: Controls
+    inputs: Inputs | None = None

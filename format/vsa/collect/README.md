@@ -17,14 +17,14 @@ vsa-collect --cache cache init tomcat --ref 11.0.27 --version 11.0.27 \
     --dist-dir https://downloads.apache.org/tomcat/tomcat-11/v11.0.27/src/ \
     --parent asf.json -I baseline -o project.json --report report.json
 
-# per release (--issued is the attestation date, normally the vote-pass date; never the clock)
+# per release (--issued is the attestation date, the time the release vote opens; never the clock)
 vsa-collect --cache cache release 11.0.27 --issued 2026-10-06T00:00:00Z --tag 11.0.27 \
     --dist-dir https://downloads.apache.org/tomcat/tomcat-11/v11.0.27/src/ -o release-11.0.27.json
 
 vsa generate project.json release-11.0.27.json DIR_WITH_FILES -I baseline -o out.vsa.json
 ```
 
-`--cache DIR` keeps every network response, including 404s and git file lists. Adding `--offline` repeats a run from the cache alone, with byte-identical output. Without the cache, the output still changes only when the ASF data it reads changes.
+`--cache DIR` keeps every network response, including 404s and git file lists. Adding `--offline` repeats a run from the cache alone, with byte-identical output. Without the cache, the output still changes only when the ASF data it reads changes. The cache is plain files, so anyone who can write to its directory can change what a run reads; the report's `responses` list gives the status and SHA-512 of every response the run used, cached or not, so a reviewer can see exactly which data a draft came from.
 
 Options worth knowing:
 
@@ -32,6 +32,7 @@ Options worth knowing:
 - `--git-url` names the GitHub repository when `projects.json` lists none. httpd needs this, because it lists only Subversion.
 - `--source 'GLOB'` names the source package when its file name does not say so, for example `httpd-2.4.69.tar.gz`. Without it, `release` fails rather than guessing which file is the official release.
 - `--records FILE` (repeatable) replaces single record fields with values from another system. See "Swapping data sources" below.
+- `--contact-style role` writes an AU.02 contact with the chair's role and private@ list but not their name, and sets `attestation.contactStyle` to `role` in the draft, so `vsa generate` leaves the name out too. `--contact-style name` writes the name and sets the style explicitly. Without the option, the draft names the chair, as before.
 - `--projects-base` changes where `projects.json` and `committees.json` come from. The default is `https://projects.apache.org/json/foundation/`. The same files are committed to `apache/comdev-projects` under `site/json/foundation/`, which is what I used here, because projects.apache.org is blocked from my sandbox.
 
 ## Where each value comes from

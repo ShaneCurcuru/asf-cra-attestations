@@ -138,5 +138,27 @@
     "QA.05",
     "QA.07",
     "EL.01"
+  ],
+  "responses": [
+    {
+      "key": "git:https://github.com/apache/httpd.git#2.4.69",
+      "status": 200,
+      "sha512": "9831c0b903330ede15232ffee21d6f2202096202ae35d7c49bd68f8348ec790c950440de8f1a29cdddbc823c5f6e7284f190d7e076d0159bba7394eea0a83a50"
+    },
+    {
+      "key": "https://downloads.apache.org/httpd/KEYS",
+      "status": 200,
+      "sha512": "eb7de1e13e39b21346a20c3b7a58bfbf7a1e0e2d41c9d386dba6abfbb981426c9cb7b4d19701293e3bcb0f785d9d7c12a8d8a9191789d5e79984efb8e53ca588"
+    },
+    {
+      "key": "https://raw.githubusercontent.com/apache/comdev-projects/trunk/site/json/foundation/committees.json",
+      "status": 200,
+      "sha512": "97715e6b07344164884475a3c8d30ab18fb8bfc48a0875826c56c6e32e1ab237d2b39d0c38af1ab3cded4781170bc3bf690eb495a5d265c2d0ca143ecbf0ad2c"
+    },
+    {
+      "key": "https://raw.githubusercontent.com/apache/comdev-projects/trunk/site/json/foundation/projects.json",
+      "status": 200,
+      "sha512": "0002d195823b87dde1894c749291a3711c2e937b35e7e98222f1a417f7201940aacd7733dc0564ae1ea2e38d68f8920f50f6f7079bda2f2e65e5956a083dd076"
+    }
   ]
 }

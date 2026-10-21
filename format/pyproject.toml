@@ -19,6 +19,11 @@ dependencies = [
 models = [
   "pydantic[email]>=2.11,<3",
 ]
+# OpenPGP signature checks for vsa verify and vsa generate --keys, with the library ATR uses.
+# Its API is not stable yet, so the minor version is pinned
+openpgp = [
+  "rpgp-py>=0.20,<0.21",
+]
 
 [project.scripts]
 vsa = "vsa.cli:main"
@@ -38,11 +43,13 @@ vsa = ["schema/*.json"]
 dev = [
   "pre-commit>=2.20.0",
   "pyright>=1.1.393",
+  "rpgp-py>=0.20,<0.21",
   "ruff>=0.9.4",
 ]
 test = [
   "pydantic[email]>=2.11,<3",
   "pytest>=8.0",
+  "rpgp-py>=0.20,<0.21",
 ]
 # Pinned so that scripts/models_generate.py always writes the same vsa/models.py
 codegen = [
@@ -89,8 +96,8 @@ select = [
 strict-checking = true
 
 [tool.ruff.lint.per-file-ignores]
-# verify downloads release files, and _fetch refuses anything but https before calling urlopen
-"vsa/digests.py" = ["S310"]
+# get refuses anything but https before opening a URL, and refuses redirects to http or another host
+"vsa/https.py" = ["S310"]
 # Tests import vsa modules after skipping when pydantic is missing
 "tests/test_models.py" = ["E402", "S603"]
 # Generated from the schema; its class docstrings carry the schema descriptions verbatim

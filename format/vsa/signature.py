@@ -34,17 +34,20 @@ def fingerprint(armored: bytes) -> str:
     This reads the Issuer Fingerprint subpacket (RFC 9580, type 33) of a v4, v5 or v6 signature.
     It identifies the key only, and does not check the signature.
     """
-    data = _armor_payload(armored.decode("ascii"))
-    i = _body_offset(data)
-    version = data[i]
-    if version not in _SUPPORTED_VERSIONS:
-        raise document.InputError(f"unsupported signature packet version {version}")
-    # Skip the version, signature type, public key algorithm, and hash algorithm octets
-    i += 4
-    count_length = 4 if (version == 6) else 2
-    hashed_length = int.from_bytes(data[i : i + count_length], "big")
-    i += count_length
-    return _subpacket_fingerprint(data[i : i + hashed_length])
+    try:
+        data = _armor_payload(armored.decode("ascii"))
+        i = _body_offset(data)
+        version = data[i]
+        if version not in _SUPPORTED_VERSIONS:
+            raise document.InputError(f"unsupported signature packet version {version}")
+        # Skip the version, signature type, public key algorithm, and hash algorithm octets
+        i += 4
+        count_length = 4 if (version == 6) else 2
+        hashed_length = int.from_bytes(data[i : i + count_length], "big")
+        i += count_length
+        return _subpacket_fingerprint(data[i : i + hashed_length])
+    except (IndexError, UnicodeDecodeError, ValueError) as e:
+        raise document.InputError(f"malformed OpenPGP signature: {e}") from e
 
 
 def _armor_payload(armored: str) -> bytes:

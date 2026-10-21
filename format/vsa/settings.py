@@ -24,6 +24,10 @@ hierarchy.
 A file may list fields under "required", as JSON Pointers (RFC 6901) such as "/issuer" or
 "/controls/VM.01/status". Once a file requires a field, it is an error for any file below it to
 change that field's value.
+
+Required fields only bind files below the file that requires them, so a caller that relies on
+them must also check that the chain starts at the root it expects (see check_root). Otherwise a
+settings file can name a copy of the root, placed next to it, that requires nothing.
 """
 
 import dataclasses
@@ -32,6 +36,7 @@ import pathlib
 from collections.abc import Sequence
 from typing import Any, Final
 
+import vsa.digests as digests
 import vsa.document as document
 
 # Keys that describe one file, and are never inherited
@@ -42,10 +47,15 @@ _MISSING: Final[object] = object()
 
 @dataclasses.dataclass(frozen=True)
 class Layer:
-    """One settings file, and where it came from, for error messages."""
+    """One settings file, where it came from, and the SHA-512 of its bytes when read from a file."""
 
     source: str
     doc: document.Document
+    sha512: str | None = None
+
+    def digest(self) -> str:
+        """Return the SHA-512 of the file, or of the document as vsa writes JSON when it has no file."""
+        return self.sha512 or digests.sha512(document.dump(self.doc).encode("utf-8"))
 
 
 def chain(path: str | pathlib.Path, include: Sequence[str | pathlib.Path] = ()) -> list[Layer]:
@@ -63,10 +73,23 @@ def chain(path: str | pathlib.Path, include: Sequence[str | pathlib.Path] = ()) 
             loop = " -> ".join(layer.source for layer in layers)
             raise document.InputError(f"settings parents form a loop: {loop} -> {current}")
         seen.append(resolved)
-        doc = document.load(current)
-        layers.append(Layer(str(current), doc))
+        data = current.read_bytes()
+        doc = document.loads(data, str(current))
+        layers.append(Layer(str(current), doc, digests.sha512(data)))
         current = _parent_path(current, doc, include)
     return layers[::-1]
+
+
+def check_root(layers: Sequence[Layer], sha512s: Sequence[str]) -> None:
+    """Fail unless the first layer, the root, has one of the given SHA-512 digests.
+
+    ATR, or the release manager, passes the digest of the published ASF baseline, so that a
+    settings file cannot replace the root, and with it every required field.
+    """
+    wanted = {s.lower() for s in sha512s}
+    if (not layers) or (layers[0].digest() not in wanted):
+        source = layers[0].source if layers else "no settings"
+        raise document.InputError(f"settings root {source} is not the expected root file (checked by SHA-512)")
 
 
 def find(name: str, directory: str | pathlib.Path, include: Sequence[str | pathlib.Path] = ()) -> pathlib.Path:

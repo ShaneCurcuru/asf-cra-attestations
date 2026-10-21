@@ -18,6 +18,10 @@
 
 Every response, including a 404, is stored in the cache directory keyed by URL.
 An offline run reads only from the cache, so the same cache always gives the same draft.
+
+The cache is plain files that anyone with write access to its directory can change, so the
+fetcher keeps the SHA-512 of every response it used, cached or not, and the report lists them.
+That records exactly which data a draft was built from.
 """
 
 import hashlib
@@ -25,14 +29,10 @@ import json
 import pathlib
 import subprocess
 import tempfile
-import urllib.error
-import urllib.request
-from typing import Final
 
+import vsa.digests as digests
 import vsa.document as document
-
-_TIMEOUT_SECONDS: Final[int] = 60
-_USER_AGENT: Final[str] = "vsa-collect (Apache CRA attestation tooling)"
+import vsa.https as https
 
 
 class Fetcher:
@@ -43,17 +43,22 @@ class Fetcher:
             raise document.InputError("an offline run needs a cache directory")
         self.cache_dir = cache_dir
         self.offline = offline
+        # Each key used, with its status and the SHA-512 of its body
+        self.used: dict[str, tuple[int, str]] = {}
 
     def get(self, url: str) -> bytes | None:
         """Return the body at url, or None when the server answers 404."""
         cached = self._read_cache(url)
         if cached is not None:
+            self._use(url, *cached)
             return cached[1] if cached[0] == 200 else None
         if self.offline:
             raise document.InputError(f"offline, and not in the cache: {url}")
-        status, body = _download(url)
-        self.record(url, status, body)
-        return body if status == 200 else None
+        body = https.get(url)
+        status = 404 if (body is None) else 200
+        self.record(url, status, body or b"")
+        self._use(url, status, body or b"")
+        return body
 
     def get_json(self, url: str) -> object:
         body = self.get(url)
@@ -66,6 +71,7 @@ class Fetcher:
         key = f"git:{repo_url}#{ref}"
         cached = self._read_cache(key)
         if cached is not None:
+            self._use(key, *cached)
             if cached[0] != 200:
                 raise document.InputError(f"ref {ref} not found in {repo_url}")
             lines = cached[1].decode("utf-8").splitlines()
@@ -73,8 +79,14 @@ class Fetcher:
         if self.offline:
             raise document.InputError(f"offline, and not in the cache: {key}")
         commit, paths = _git_tree(repo_url, ref)
-        self.record(key, 200, "\n".join([commit, *paths]).encode("utf-8"))
+        body = "\n".join([commit, *paths]).encode("utf-8")
+        self.record(key, 200, body)
+        self._use(key, 200, body)
         return commit, paths
+
+    def responses(self) -> list[document.Document]:
+        """Return every response used so far, sorted by key, with its status and the SHA-512 of its body."""
+        return [{"key": k, "status": st, "sha512": sha} for k, (st, sha) in sorted(self.used.items())]
 
     def record(self, key: str, status: int, body: bytes) -> None:
         """Store a response in the cache, which is also how a cache can be seeded by hand."""
@@ -94,23 +106,13 @@ class Fetcher:
         status = json.loads(meta_path.read_text(encoding="utf-8"))["status"]
         return status, body_path.read_bytes()
 
+    def _use(self, key: str, status: int, body: bytes) -> None:
+        self.used[key] = (status, digests.sha512(body))
+
 
 def _cache_paths(cache_dir: pathlib.Path, key: str) -> tuple[pathlib.Path, pathlib.Path]:
     digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:32]
     return cache_dir / f"{digest}.json", cache_dir / f"{digest}.body"
-
-
-def _download(url: str) -> tuple[int, bytes]:
-    if not url.startswith("https://"):
-        raise document.InputError(f"refusing to fetch a non-https URL: {url}")
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
-    try:
-        with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS) as response:
-            return 200, response.read()
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            return 404, b""
-        raise document.InputError(f"HTTP {e.code} from {url}") from e
 
 
 def _fetch_ref(repo_url: str, ref: str, work: str) -> None:

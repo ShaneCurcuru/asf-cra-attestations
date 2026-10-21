@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.3.0",
+  "schemaVersion": "0.4.0",
   "template": {
     "id": "orcwg-vsa-lite",
     "version": "0.1",
@@ -257,5 +257,27 @@
       "status": "not_met",
       "explanation": "Project-level retirement is announced through the Apache Attic, but Commons Lang does not publish a per-version support or end-of-life policy."
     }
-  }
+  },
+  "inputs": [
+    {
+      "role": "settings",
+      "name": "asf.json",
+      "sha512": "dad6e33b11d78c6b44bb0228341f31febfc02352566c8b797bd66719ebc2428ef6b3f9e95a0505b090ee5b388df8724105c5dafee0c6f0b9a539b471d22630df"
+    },
+    {
+      "role": "settings",
+      "name": "java.json",
+      "sha512": "c56a1a319868b900c1410a1c2c9066c52616f002b57bd3fcd91e0b4adaf1b328c1015ff64ca55ee5fc42a6504613dd886679fd177de1f2695862dfc414e43d51"
+    },
+    {
+      "role": "settings",
+      "name": "project.json",
+      "sha512": "5138a720055754d3a0dcc9090bc01c2600aaa7a5c20c7617ae5f6a3aa63eb9907b5973b6e35c2de26e92fc7ff5d78f3b6613da93157c42a329ff3b2640bbe270"
+    },
+    {
+      "role": "release",
+      "name": "release-3.17.0.json",
+      "sha512": "b99c34f7269216b3b0dc0ef3e1d44aeda9927c24cc3d01f810d876e177364190cb3830668a5da3b62c2f201f82520943b9eff616191f212ce5eda9ec77af6dd5"
+    }
+  ]
 }

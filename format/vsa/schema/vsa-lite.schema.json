@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://tooling.apache.org/cra/vsa-lite/0.3.0/vsa-lite.schema.json",
+  "$id": "https://tooling.apache.org/cra/vsa-lite/0.4.0/vsa-lite.schema.json",
   "title": "Light-weight Voluntary Security Attestation (VSA-lite)",
   "description": "Machine-readable form of the ORC WG Tier 1 checklist (orcwg/cra-attestations proposals/template-lite.md v0.1, derived from BSI TR-03185-2). One document attests to one release of one project and binds that attestation to the release's artifacts by cryptographic digest, detached signature and SBOM. AU.01-AU.03 are carried by the issuer, contact and subject objects; GV/LE/QA/BR/VM/EL items are carried in controls.",
   "type": "object",
@@ -23,7 +23,7 @@
     },
     "schemaVersion": {
       "description": "Version of this schema the document conforms to.",
-      "const": "0.3.0"
+      "const": "0.4.0"
     },
     "template": {
       "description": "The human-readable checklist this document instantiates.",
@@ -88,8 +88,9 @@
       "uniqueItems": true
     },
     "comment": {
-      "description": "Free-text note from the issuer. Not interpreted by tooling.",
-      "type": "string"
+      "description": "Free-text note from the issuer, at most 500 characters. Not interpreted by tooling; release tooling shows it to voters word for word.",
+      "type": "string",
+      "maxLength": 500
     },
     "issuer": {
       "$ref": "#/$defs/issuer"
@@ -102,6 +103,9 @@
     },
     "controls": {
       "$ref": "#/$defs/controls"
+    },
+    "inputs": {
+      "$ref": "#/$defs/inputs"
     }
   },
   "$defs": {
@@ -157,11 +161,10 @@
       }
     },
     "contact": {
-      "description": "AU.02: the person issuing the attestation on the issuer's behalf, and their role. For the ASF this is the PMC chair, as the official representative of the PMC.",
+      "description": "AU.02: who speaks for the issuer about this attestation. For the ASF this is the PMC chair, as the official representative of the PMC, named by role; the person's name is included only when the PMC chooses to (attestation.contactStyle 'name' in its settings).",
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "name",
         "role"
       ],
       "properties": {
@@ -760,6 +763,36 @@
           "description": "Date by which the PMC must re-confirm, at most 12 months after decided.",
           "type": "string",
           "format": "date"
+        }
+      }
+    },
+    "inputs": {
+      "description": "The input files the attestation was generated from, root settings file first, then the release file, each with the SHA-512 of its bytes. Lets an auditor show exactly which baseline and answers were used.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "name",
+          "sha512"
+        ],
+        "properties": {
+          "role": {
+            "enum": [
+              "settings",
+              "release"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha512": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{128}$"
+          }
         }
       }
     }

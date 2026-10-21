@@ -16,15 +16,18 @@
 # under the License.
 """Command line interface for the collector.
 
-  vsa-collect init KEY [--ref REF] [--version V --dist-dir URL ...] [--parent FILE [-I DIR]...] [-o OUT]
+  vsa-collect init KEY [--ref REF] [--version V --dist-dir URL ...] [--parent FILE [-I DIR]...]
+                       [--contact-style name|role] [-o OUT]
         Write a draft project.json for the projects.apache.org project KEY, filling every value
         it can find in public ASF data. --parent is written into the draft as its parent, and is
         found as vsa generate will find it: next to OUT, or else in each -I directory. Controls the
         parent or any of its own parents answers are left to them. Controls nobody answers are left out, so
-        vsa generate refuses to run until the PMC answers them; --report lists each one and why.
+        vsa generate refuses to run until the PMC answers them; --report lists each one and why,
+        and the SHA-512 of every network or cache response used. --contact-style role writes
+        a draft whose AU.02 contact gives the chair's role and list address, but not their name.
   vsa-collect release VERSION --issued TIME --dist-dir URL ... [--tag T] [--commit C] [-o OUT]
         Write release-VERSION.json naming every artifact, signature and SBOM for VERSION in the
-        listed download directories. TIME is the attestation date, normally when the vote passed.
+        listed download directories. TIME is the attestation date, the time the release vote opens.
 
 Project, roster, security and lifecycle data come from swappable sources (see providers.py).
 --records FILE replaces individual fields with values from another system, such as a RosterTool
@@ -80,6 +83,7 @@ def _init(fetcher: fetch.Fetcher, args: argparse.Namespace) -> None:
         dist_dirs=tuple(args.dist_dir),
         parent=args.parent,
         baselines=_baselines(args),
+        contact_style=args.contact_style,
     )
     data = providers.default_sources(fetcher, args.projects_base)
     for path in args.records:
@@ -113,6 +117,9 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     init_parser.add_argument("--projects-base", default=providers.PROJECTS_BASE, help="where projects.json lives")
     init_parser.add_argument(
         "--records", action="append", default=[], help="JSON file whose record fields replace the sources' values"
+    )
+    init_parser.add_argument(
+        "--contact-style", choices=("name", "role"), help="whether AU.02 publishes the chair's name, or only the role"
     )
     init_parser.add_argument("-o", "--output", help="write here instead of stdout")
     init_parser.add_argument("--report", help="write the JSON report here")

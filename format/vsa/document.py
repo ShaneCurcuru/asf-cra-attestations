@@ -52,8 +52,15 @@ def dump(doc: Document) -> str:
 
 
 def load(path: str | pathlib.Path) -> Document:
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)
+    return loads(pathlib.Path(path).read_bytes(), str(path))
+
+
+def loads(data: bytes, source: str) -> Document:
+    """Parse JSON bytes read from source, which must hold an object."""
+    doc = json.loads(data.decode("utf-8"))
+    if not isinstance(doc, dict):
+        raise InputError(f"{source}: not a JSON object")
+    return doc
 
 
 def _check_references(doc: Document) -> list[str]:

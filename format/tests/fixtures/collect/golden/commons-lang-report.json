@@ -136,5 +136,37 @@
     "QA.07",
     "BR.01",
     "EL.01"
+  ],
+  "responses": [
+    {
+      "key": "git:https://github.com/apache/commons-lang.git#rel/commons-lang-3.17.0",
+      "status": 200,
+      "sha512": "d1feaa6ee137d69b2d91cce3a9da756b96ffe1d9241e968c078945faf79d5f925ecaf88a04275630a82a03123482a33ae929e70f9a7c833264a4c91ba30d46f2"
+    },
+    {
+      "key": "https://archive.apache.org/dist/commons/lang/source/",
+      "status": 200,
+      "sha512": "6df2062208dc20ed1e06ec34a2bbf96c1d6a5f5b0502ffd5a9a484b16de09a099cfdf58d32711230610b9e9c6faf5ae7c8c17aff2b74cf524866f20c25056735"
+    },
+    {
+      "key": "https://downloads.apache.org/commons/KEYS",
+      "status": 200,
+      "sha512": "eb7de1e13e39b21346a20c3b7a58bfbf7a1e0e2d41c9d386dba6abfbb981426c9cb7b4d19701293e3bcb0f785d9d7c12a8d8a9191789d5e79984efb8e53ca588"
+    },
+    {
+      "key": "https://raw.githubusercontent.com/apache/comdev-projects/trunk/site/json/foundation/committees.json",
+      "status": 200,
+      "sha512": "97715e6b07344164884475a3c8d30ab18fb8bfc48a0875826c56c6e32e1ab237d2b39d0c38af1ab3cded4781170bc3bf690eb495a5d265c2d0ca143ecbf0ad2c"
+    },
+    {
+      "key": "https://raw.githubusercontent.com/apache/comdev-projects/trunk/site/json/foundation/projects.json",
+      "status": 200,
+      "sha512": "0002d195823b87dde1894c749291a3711c2e937b35e7e98222f1a417f7201940aacd7733dc0564ae1ea2e38d68f8920f50f6f7079bda2f2e65e5956a083dd076"
+    },
+    {
+      "key": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/",
+      "status": 200,
+      "sha512": "c4ee2fdf3946ad326bed59afe2dd9a8a86cc278c268b22a07341a5fe3c841c17cf9a599da5212a923cd3345958345543e021cc3fc3b43d66731a84a78d125154"
+    }
   ]
 }
