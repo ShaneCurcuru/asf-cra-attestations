@@ -16,9 +16,11 @@
 # under the License.
 """Command line interface for PMCs and release managers.
 
-  vsa generate BASELINE PROJECT RELEASE DIR [-c COMMUNITY]... [-o OUT]
+  vsa generate SETTINGS RELEASE DIR [-I INCLUDE]... [-o OUT]
         Build an attestation from the JSON input files and the release files in DIR.
-        Each COMMUNITY baseline is layered on BASELINE, in order, before the PROJECT answers.
+        SETTINGS is the project or product file. Its "parent", and each parent's own parent,
+        are loaded first and layered beneath it; a parent is found next to the file naming it,
+        or else in each INCLUDE directory. A field a parent lists as "required" may not change.
         Digests, sizes, OpenPGP key fingerprints and SBOM serial numbers are computed from
         the files, and the same inputs always give byte-identical output.
   vsa validate FILE
@@ -41,6 +43,7 @@ import vsa.assemble as assemble
 import vsa.digests as digests
 import vsa.document as document
 import vsa.intoto as intoto
+import vsa.settings as settings
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -64,13 +67,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 def _load_input(args: argparse.Namespace) -> document.Document:
     if args.cmd == "generate":
-        return assemble.attestation(
-            document.load(args.baseline),
-            document.load(args.project),
-            document.load(args.release),
-            args.dir,
-            community=[document.load(path) for path in args.community],
-        )
+        layers = settings.chain(args.settings, include=args.include)
+        return assemble.attestation(layers, document.load(args.release), args.dir)
     return intoto.unwrap(document.load(args.file))
 
 
@@ -80,17 +78,16 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     )
     commands = parser.add_subparsers(dest="cmd", required=True)
     generate_parser = commands.add_parser("generate")
-    generate_parser.add_argument("baseline")
-    generate_parser.add_argument("project")
+    generate_parser.add_argument("settings", help="project or product settings file; its parents are loaded first")
     generate_parser.add_argument("release")
     generate_parser.add_argument("dir", help="directory holding the release files, signatures and SBOMs")
     generate_parser.add_argument("-o", "--output", help="write here instead of stdout")
     generate_parser.add_argument(
-        "-c",
-        "--community",
+        "-I",
+        "--include",
         action="append",
         default=[],
-        help="community baseline layered on the ASF baseline, before the project; may be repeated",
+        help="directory to look for parent settings files in; may be repeated",
     )
     for name in ("validate", "intoto"):
         commands.add_parser(name).add_argument("file")

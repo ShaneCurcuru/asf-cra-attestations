@@ -40,7 +40,7 @@ Per the research README, CRA legal interpretation is out of scope; this process 
 **How ATR uses it.** ATR imports the package as a library and calls it at steps of the release flow it already runs. ATR already stores most of the inputs (security contact, source repositories, lifecycle and end-of-life dates as ECMA-428 CLE documents, signature and checksum checks, SBOM checks, and an `artifacts.json` per release), so ATR passes those in directly and the package does not call ATR's web API. ATR keeps the generated files in its immutable `attestable/` storage, which its docs say is intended for attestation files, and lists them in the release catalog. The package also ships a command-line interface so a PMC member can preview or check an attestation locally, and so releases still made outside ATR can be handled by a scheduled job on an ASF instance.
 
 **Two stages, kept apart.**
-1. *Collect* gathers inputs and may use the network (ATR data, Whimsy JSON, DOAP, dist files). It writes plain JSON input files in the format work's model: `baseline/asf.json` (ASF-wide answers), `project.json` (per PMC) and `release-X.json` (per release).
+1. *Collect* gathers inputs and may use the network (ATR data, Whimsy JSON, DOAP, dist files). It writes plain JSON input files in the format work's model: `baseline/asf.json` (ASF-wide answers), `project.json` (per PMC, naming `asf.json` or a community baseline as its `parent`) and `release-X.json` (per release).
 2. *Generate* reads only those files plus the local release artifacts, with no network, and writes the attestation as VSA-lite JSON, a rendered Markdown copy of the ORC WG template, and an in-toto statement ready for signing.
 
 **Rules every step follows.**
@@ -85,6 +85,8 @@ Stored as `baseline/asf.json` in the tool repository, versioned and released wit
 | EL.01 (project level) | Retired projects move to the Apache Attic with public notice | Attic process |
 
 Each attestation cites the baseline version it relies on instead of repeating it.
+
+The baseline is the root of a chain of settings files. Each file may name a `parent`, which is loaded first, so a project's `project.json` names `asf.json` (or a community baseline whose own parent is `asf.json`), and a PMC with several products can add a PMC-wide file in between. The baseline also lists `required` fields, which no file below it may change: the issuer and template, LE.02 and VM.02 whole, and the status of QA.03, BR.03 and VM.01 (see the format README, "Issues to resolve with design"). Without `required`, a lower file can replace any answer. Nothing in the tool assumes `asf.json` is the root, so another steward can set up its own hierarchy.
 
 ### Layer B: Project profile (maintained by each PMC, reviewed yearly)
 

@@ -16,10 +16,11 @@
 # under the License.
 """Command line interface for the collector.
 
-  vsa-collect init KEY [--ref REF] [--version V --dist-dir URL ...] [--baseline FILE ...] [-o OUT]
+  vsa-collect init KEY [--ref REF] [--version V --dist-dir URL ...] [--parent FILE [-I DIR]...] [-o OUT]
         Write a draft project.json for the projects.apache.org project KEY, filling every value
-        it can find in public ASF data. Controls a --baseline file answers (the ASF baseline, then
-        any community baseline) are left to that baseline. Controls nobody answers are left out, so
+        it can find in public ASF data. --parent is written into the draft as its parent, and is
+        found as vsa generate will find it: next to OUT, or else in each -I directory. Controls the
+        parent or any of its own parents answers are left to them. Controls nobody answers are left out, so
         vsa generate refuses to run until the PMC answers them; --report lists each one and why.
   vsa-collect release VERSION --issued TIME --dist-dir URL ... [--tag T] [--commit C] [-o OUT]
         Write release-VERSION.json naming every artifact, signature and SBOM for VERSION in the
@@ -42,6 +43,7 @@ import vsa.collect.draft as draft
 import vsa.collect.fetch as fetch
 import vsa.collect.providers as providers
 import vsa.document as document
+import vsa.settings as settings
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -58,6 +60,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     return 0
 
 
+def _baselines(args: argparse.Namespace) -> tuple[str, ...]:
+    # The parent chain, root first, found from where the draft will be written
+    if args.parent is None:
+        return ()
+    directory = pathlib.Path(args.output).parent if args.output else pathlib.Path()
+    found = settings.find(args.parent, directory, args.include)
+    return tuple(layer.source for layer in settings.chain(found, args.include))
+
+
 def _init(fetcher: fetch.Fetcher, args: argparse.Namespace) -> None:
     if args.dist_dir and (not args.version):
         raise document.InputError("--dist-dir needs --version, to pick out that release's SBOMs")
@@ -67,7 +78,8 @@ def _init(fetcher: fetch.Fetcher, args: argparse.Namespace) -> None:
         ref=args.ref,
         git_url=args.git_url,
         dist_dirs=tuple(args.dist_dir),
-        baselines=tuple(args.baseline),
+        parent=args.parent,
+        baselines=_baselines(args),
     )
     data = providers.default_sources(fetcher, args.projects_base)
     for path in args.records:
@@ -94,8 +106,9 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     init_parser.add_argument("--git-url", help="GitHub repository, when projects.json gives none")
     init_parser.add_argument("--version", help="release version whose files --dist-dir holds")
     init_parser.add_argument("--dist-dir", action="append", default=[], help="download directory URL")
+    init_parser.add_argument("--parent", help="parent settings file for the draft; its controls are left out")
     init_parser.add_argument(
-        "--baseline", action="append", default=[], help="baseline file, broadest first; its controls are left out"
+        "-I", "--include", action="append", default=[], help="directory to look for parent settings files in"
     )
     init_parser.add_argument("--projects-base", default=providers.PROJECTS_BASE, help="where projects.json lives")
     init_parser.add_argument(

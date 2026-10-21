@@ -133,8 +133,8 @@ document becomes the shared reference these pages link to.
 - **Legal and the Board:** what the ASF commits to as issuer, baseline approval, opt-out policy, Art. 24 steward duties.
 - **Auditors and authorities:** where to find an attestation, how to verify it (`vsa verify`), what each field means
   and does not mean, and whom to contact.
-- **Baseline governance:** who owns the ASF baseline and each community baseline, how changes are proposed and
-  versioned, and how PMCs are told.
+- **Baseline governance:** who owns the ASF baseline and each community baseline, which fields each one marks
+  `required` (so no PMC can change them), how changes are proposed and versioned, and how PMCs are told.
 
 ## 4. Training and self-testing
 
