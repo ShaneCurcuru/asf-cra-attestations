@@ -1,0 +1,24 @@
+{
+  "description": "Test release: one source file signed by the test release manager key in KEYS, and a CycloneDX SBOM.",
+  "version": "1.0",
+  "tag": "rel/hello-1.0",
+  "commit": "0123456789abcdef0123456789abcdef01234567",
+  "issued": "2026-10-21T00:00:00Z",
+  "artifacts": [
+    {
+      "id": "src",
+      "name": "hello.txt",
+      "role": "source",
+      "official": true,
+      "uri": "https://downloads.apache.org/commons/hello.txt",
+      "signatureUri": "https://downloads.apache.org/commons/hello.txt.asc"
+    }
+  ],
+  "sboms": [
+    {
+      "id": "sbom-cdx",
+      "format": "CycloneDX",
+      "uri": "https://downloads.apache.org/commons/hello.cdx.json"
+    }
+  ]
+}

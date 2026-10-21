@@ -78,6 +78,8 @@ class Options:
     parent: str | None = None
     # The settings files the draft inherits, root first, such as the ASF baseline then a community baseline
     baselines: tuple[str, ...] = ()
+    # "name" or "role": whether AU.02 publishes the chair's name, written into the draft when given
+    contact_style: str | None = None
 
 
 def has_version(url: str, version: str) -> bool:
@@ -106,7 +108,7 @@ def project_draft(
     """
     facts, keys = _facts(fetcher, data, options)
     resolutions = _apply_baselines(resolve.all_controls(facts), options.baselines)
-    draft, field_report = _project_fields(facts, keys)
+    draft, field_report = _project_fields(facts, keys, options.contact_style)
     if options.parent is not None:
         draft = {"description": draft.pop("description"), "parent": options.parent, **draft}
     draft["controls"] = {c: r.control for c, r in resolutions.items() if r.control is not None}
@@ -119,6 +121,7 @@ def project_draft(
         "controls": {c: _report_entry(r) for c, r in resolutions.items()},
         "toAnswer": [c for c, r in resolutions.items() if r.result == resolve.NEEDS_ANSWER]
         + [f for f, e in field_report.items() if e["result"] == resolve.NEEDS_ANSWER],
+        "responses": fetcher.responses(),
     }
     return draft, report
 
@@ -201,17 +204,19 @@ def _baseline_resolution(resolution: resolve.Resolution, owner: str | None) -> r
     return resolution
 
 
-def _contact(facts: resolve.Facts) -> document.Document | None:
+def _contact(facts: resolve.Facts, style: str | None) -> document.Document | None:
     # AU.02 names the PMC chair, as the official representative of the PMC (Shane, 2026-10-15)
     # TODO: Ask whether a PMC may instead name the release manager, as the person who ran the build
     committee = facts.committee
-    if (committee is None) or (not committee.chair_name):
+    if committee is None:
         return None
-    return {
-        "name": committee.chair_name,
-        "role": f"Vice President, {committee.name}",
-        "email": f"private@{committee.pmc}.apache.org",
-    }
+    role = {"role": f"Vice President, {committee.name}", "email": f"private@{committee.pmc}.apache.org"}
+    # A PMC may publish its chair by role alone (Shane, 2026-10-21)
+    if style == "role":
+        return role
+    if not committee.chair_name:
+        return None
+    return {"name": committee.chair_name, **role}
 
 
 def _facts(fetcher: fetch.Fetcher, data: records.Sources, options: Options) -> tuple[resolve.Facts, str | None]:
@@ -248,7 +253,9 @@ def _other_role(name: str) -> str:
     return "documentation" if _DOC_RE.search(name) else "binary"
 
 
-def _project_fields(facts: resolve.Facts, keys: str | None) -> tuple[document.Document, dict[str, dict[str, str]]]:
+def _project_fields(
+    facts: resolve.Facts, keys: str | None, contact_style: str | None
+) -> tuple[document.Document, dict[str, dict[str, str]]]:
     project = facts.project
     draft: document.Document = {
         "description": "Draft written by vsa-collect. Review every value and answer the controls the report lists.",
@@ -263,9 +270,11 @@ def _project_fields(facts: resolve.Facts, keys: str | None) -> tuple[document.Do
     committee_name = facts.committee.name if facts.committee else f"Apache {project.pmc}"
     draft["pmc"] = f"{committee_name} PMC"
     roster_source = facts.committee.source if facts.committee else "roster"
-    _set(draft, report, "contact", _contact(facts), roster_source, "No PMC chair found.")
+    _set(draft, report, "contact", _contact(facts, contact_style), roster_source, "No PMC chair found.")
     _set(draft, report, "vcs", _vcs(project), project.source, "No https source repository.")
     _set(draft, report, "keysUri", keys, "downloads.apache.org", "No KEYS file found.")
+    if contact_style is not None:
+        draft["attestation"] = {"contactStyle": contact_style}
     return draft, report
 
 

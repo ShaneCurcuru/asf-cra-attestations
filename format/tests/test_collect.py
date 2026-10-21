@@ -17,6 +17,7 @@
 
 import json
 import pathlib
+import shutil
 from typing import Final
 
 import pytest
@@ -172,6 +173,15 @@ def test_parents_are_layered_and_win_over_collected_answers(tmp_path: pathlib.Pa
     assert sources == ["asf.json", "java-group.json", "project.json"]
 
 
+def test_contact_style_role_leaves_out_the_chair_name(tmp_path: pathlib.Path) -> None:
+    out = tmp_path / "project.json"
+    args = [*_OFFLINE, "init", "tomcat", *_INIT_CASES["tomcat"], "--projects-base", _PROJECTS_BASE]
+    assert cli.main([*args, "--contact-style", "role", "-o", str(out)]) == 0
+    project = document.load(out)
+    assert project["contact"] == {"role": "Vice President, Apache Tomcat", "email": "private@tomcat.apache.org"}
+    assert project["attestation"] == {"contactStyle": "role"}
+
+
 def test_draft_alone_does_not_generate(tmp_path: pathlib.Path) -> None:
     project = document.load(_GOLDEN / "tomcat-project.json")
     layers = [*settings.chain(_ROOT / "baseline" / "asf.json"), settings.Layer("project", project)]
@@ -245,6 +255,27 @@ def test_records_file_replaces_single_fields(tmp_path: pathlib.Path) -> None:
     assert project["controls"]["QA.03"]["evidence"][0] == {"uri": "https://tomcat.apache.org/security.html"}
     assert project["controls"]["EL.01"]["status"] == "met"
     assert "EL.01" not in report["toAnswer"]
+
+
+def test_report_records_the_digest_of_each_response(tmp_path: pathlib.Path) -> None:
+    # Anyone who can write to the cache can change a response, and the report then shows it
+    cache = tmp_path / "cache"
+    shutil.copytree(_CACHE, cache)
+    keys_url = "https://downloads.apache.org/tomcat/tomcat-11/KEYS"
+    fetcher = fetch.Fetcher(cache, offline=True)
+    fetcher.record(keys_url, 200, b"replaced")
+    report_path = tmp_path / "report.json"
+    args = ["--cache", str(cache), "--offline", "init", "tomcat", *_INIT_CASES["tomcat"]]
+    assert (
+        cli.main(
+            [*args, "--projects-base", _PROJECTS_BASE, "-o", str(tmp_path / "p.json"), "--report", str(report_path)]
+        )
+        == 0
+    )
+    responses = {r["key"]: r["sha512"] for r in document.load(report_path)["responses"]}
+    golden = {r["key"]: r["sha512"] for r in document.load(_GOLDEN / "tomcat-report.json")["responses"]}
+    assert set(responses) == set(golden)
+    assert [k for k in responses if responses[k] != golden[k]] == [keys_url]
 
 
 @pytest.mark.parametrize("name", sorted(_RELEASE_CASES))

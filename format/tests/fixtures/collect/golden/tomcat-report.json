@@ -136,5 +136,37 @@
     "QA.01",
     "QA.07",
     "EL.01"
+  ],
+  "responses": [
+    {
+      "key": "git:https://github.com/apache/tomcat.git#11.0.27",
+      "status": 200,
+      "sha512": "dbc08b8eb25ef681ab649234d83b068bce699b7f98c826fc396df7fb7f20b76f7c4b6e59823172a3d831bb3fc749940cfec14f66fd54d18e9d2dbeb7af8f0985"
+    },
+    {
+      "key": "https://downloads.apache.org/tomcat/KEYS",
+      "status": 404,
+      "sha512": "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"
+    },
+    {
+      "key": "https://downloads.apache.org/tomcat/tomcat-11/KEYS",
+      "status": 200,
+      "sha512": "eb7de1e13e39b21346a20c3b7a58bfbf7a1e0e2d41c9d386dba6abfbb981426c9cb7b4d19701293e3bcb0f785d9d7c12a8d8a9191789d5e79984efb8e53ca588"
+    },
+    {
+      "key": "https://downloads.apache.org/tomcat/tomcat-11/v11.0.27/src/",
+      "status": 200,
+      "sha512": "f26f2ac167782b1e94a871b4b0c537db592dae28ea46a4d5b1d9afa9dd9f204a357ad197a1bfc4eeb6eaa808323f08ef2451876c47936bccd258257748126d1b"
+    },
+    {
+      "key": "https://raw.githubusercontent.com/apache/comdev-projects/trunk/site/json/foundation/committees.json",
+      "status": 200,
+      "sha512": "97715e6b07344164884475a3c8d30ab18fb8bfc48a0875826c56c6e32e1ab237d2b39d0c38af1ab3cded4781170bc3bf690eb495a5d265c2d0ca143ecbf0ad2c"
+    },
+    {
+      "key": "https://raw.githubusercontent.com/apache/comdev-projects/trunk/site/json/foundation/projects.json",
+      "status": 200,
+      "sha512": "0002d195823b87dde1894c749291a3711c2e937b35e7e98222f1a417f7201940aacd7733dc0564ae1ea2e38d68f8920f50f6f7079bda2f2e65e5956a083dd076"
+    }
   ]
 }

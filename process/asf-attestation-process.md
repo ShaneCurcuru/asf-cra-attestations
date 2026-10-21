@@ -1,6 +1,6 @@
 # ASF Release Attestation Process (Draft)
 
-**Status:** Draft for discussion, v0.3, 2026-10-15. v0.2 added the automation constraints; v0.3 places the tooling in its own Tooling team repository, called from Apache Trusted Releases (ATR), and adds an optional foundation countersignature (section 5) and an opt-out with a minimal, fully automatic attestation (section 6).
+**Status:** Draft for discussion, v0.4, 2026-10-21. v0.2 added the automation constraints; v0.3 placed the tooling in its own Tooling team repository, called from Apache Trusted Releases (ATR), and added a foundation countersignature (section 5) and an opt-out with a minimal, fully automatic attestation (section 6). v0.4 follows the [threat model](threat-model.md): the countersignature is required for every attestation, voters approve the exact attestation bytes that are signed, and the tool pins the ASF baseline, records its inputs and checks signatures.
 **Scope:** How every Apache PMC (and Incubator podling) produces a light-weight voluntary security attestation (VSA) for each software release, with The Apache Software Foundation acting as the open source software steward under CRA Article 24.
 
 **Sources used:**
@@ -16,7 +16,7 @@ Per the research README, CRA legal interpretation is out of scope; this process 
 
 ## 1. Decision: who signs
 
-**The ASF is the issuing entity on every attestation. The PMC prepares and approves it, the PMC Chair is the named contact, and the release manager signs it with the same key used for the release. PMCs that opt in also get a foundation-key countersignature (section 5).**
+**The ASF is the issuing entity on every attestation. The PMC prepares and approves it, the PMC Chair is the named contact, and the release manager signs it with the same key used for the release. ATR then countersigns every attestation with one foundation key (section 5).**
 
 | Template field | Filled with | Why |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ Per the research README, CRA legal interpretation is out of scope; this process 
 | AU.02 Contact and role | The PMC Chair, as "Vice President, Apache *Project*" | PMC Chairs are officers of the corporation, so the contact speaks for the ASF while still being the person closest to the project. A role alias (private@*project*.apache.org) is listed alongside, so the attestation survives a chair change. |
 | Approval | The PMC, in the same vote that approves the release | ASF releases are already acts of the Foundation approved by a PMC vote. Folding the attestation into that vote adds no new governance step, and matches the ORC WG view that maintainers are the most reliable party to attest (two-tier proposal, "Regarding Maintainers"). |
 | Signature | Release manager's OpenPGP key from the project `KEYS` file, plus a SHA-512 checksum | This is the same trust chain users already verify for the release artifacts, so no new key infrastructure is needed to start. |
-| Countersignature (optional) | A single ASF release-attestation key, applied by ATR | Lets consumers verify "issued by the ASF" with one key instead of hundreds of release manager keys. See section 5. |
+| Countersignature (required) | A single ASF release-attestation key, applied by ATR | Lets consumers verify "issued by the ASF" with one key instead of hundreds of release manager keys, and means a PMC insider who controls a `KEYS` entry cannot replace a published attestation alone. See section 5. |
 
 **Alternatives considered:**
 - *Each PMC as issuer.* Rejected: a PMC has no legal personality, so the attestation would not come from a steward at all.
@@ -45,9 +45,10 @@ Per the research README, CRA legal interpretation is out of scope; this process 
 
 **Rules every step follows.**
 - **No AI, basic infrastructure.** Every step is ordinary Python that runs inside ATR or on a basic ASF cloud instance.
-- **Deterministic.** The same inputs always produce byte-identical outputs. No value comes from the system clock (the attestation date is the vote-pass date), keys and lists are emitted in a fixed order, and the attestation records the digests of the input files it used. The collected input files are the audit trail for where each answer came from.
+- **Deterministic.** The same inputs always produce byte-identical outputs. No value comes from the system clock (the attestation date is fixed when the vote opens, see section 4), keys and lists are emitted in a fixed order, and the attestation's `inputs` list records the SHA-512 of every settings file and the release file it used. The collected input files, and the collector report's digest of every response it read, are the audit trail for where each answer came from.
+- **Pinned root.** ATR passes the ASF baseline itself and its SHA-512 (`--root-sha512`, `settings.check_root`), so a project's settings file cannot name its own copy of the baseline and escape its `required` fields.
 - **Fails closed.** The tool never guesses an answer. A missing, malformed or out-of-date field stops generation with a message naming the field. Answers that need judgement, such as memory-safety mitigations (QA.05) or the review model (QA.07), are stated by the PMC; the tool only checks that they are present and use an allowed value.
-- **No keys in the package.** The package never holds or uses signing keys. Release managers sign with their own keys as today, and the optional countersignature is applied by a separate ATR signing step (section 5).
+- **No keys in the package.** The package never holds or uses signing keys. Release managers sign with their own keys as today, and the countersignature is applied by a separate ATR signing step (section 5).
 - **Conventions follow ATR.** Code layout, Python version and dependencies follow ATR's conventions so ATR can import it directly; the tooling survey lists them. Reconciling them with the format draft (which targets Python 3.9+ with `jsonschema`) is open between those two pieces of work.
 - **Tested.** Golden-file tests (fixed inputs with checked-in expected outputs) make any change in output visible in review.
 
@@ -59,7 +60,8 @@ Per the research README, CRA legal interpretation is out of scope; this process 
 | `check-project` | Validates `project.json` against the schema and the 12-month review rule | ATR on every project-settings change; project CI if kept in the repo |
 | `release` | Writes `release-X.json` from ATR's release data (or the dist listing for non-ATR releases) | ATR when a release candidate is composed |
 | `generate` | Builds the attestation from the input files and the artifacts | ATR at release-candidate and finish steps; CLI for previews |
-| `validate` / `verify` | Checks the attestation against the schema, and its digests and signatures against the files | ATR before the vote and at finish; anyone afterwards |
+| `validate` / `verify` | Checks the attestation against the schema, and its digests and OpenPGP signatures against the files. Keys come only from a KEYS file the verifier names or from a trusted apache.org prefix, never from the attestation | ATR before the vote and at finish; anyone afterwards |
+| `diff` | Lists every answer that changed since the project's previous attestation, and the SHA-512 of the new one | ATR, for the vote email |
 | `report` | Prints a per-project summary for the quarterly board report | PMC Chair, or ATR's project page |
 
 ---
@@ -105,7 +107,7 @@ Stored as `project.json`, either in ATR's project settings or in the project's m
 | QA.07 | Review model: review-then-commit, or commit-then-review with post-commit review | Manual; varies by PMC and must be stated honestly |
 | BR.01 | Build-from-source docs | Manual |
 | EL.01 (versions) | Which release lines are supported and how end of support is announced | ATR lifecycle (CLE) dates where the PMC has set them; otherwise Manual |
-| Countersignature | Whether the PMC has opted in (section 5) | Manual |
+| AU.02 contact style | `name` to publish the chair's name, or `role` to publish only the role and private@ list (`attestation.contactStyle`) | Manual; VP Legal to choose the default |
 | Attestation mode | `full`, or `minimal` if the PMC has opted out (section 6) | Manual |
 
 Podlings fill the same profile, with the Incubator PMC as approving body and the Incubator disclaimer noted.
@@ -114,7 +116,7 @@ Podlings fill the same profile, with the Incubator PMC as approving body and the
 
 | Field | Value | Filled by |
 | --- | --- | --- |
-| AU.03 versions/dates | Release version and vote-pass date | ATR release data |
+| AU.03 versions/dates | Release version, and the attestation date (when the vote opens) | ATR release data |
 | Source identifier | Git tag and commit ID of the release | ATR release data |
 | Artifact fingerprints | SHA-512 of each source and convenience binary artifact | `generate`, computed from the artifact files |
 | Signatures | Release manager key fingerprint and `KEYS` URL | `generate`, read from each `.asc` |
@@ -129,22 +131,22 @@ Podlings fill the same profile, with the Incubator PMC as approving body and the
 This follows the ATR release flow; only the steps marked **new** are additions for PMCs.
 
 1. **Compose the release candidate in ATR** as today. ATR runs its signature, checksum, licence and SBOM checks.
-2. **(new) Draft attestation.** ATR calls `release` and `generate` and shows the draft next to the candidate. A missing or stale profile answer blocks starting the vote, with a message naming the field.
-3. **(new) Vote on it.** The vote email links the draft attestation alongside the artifacts. A binding +1 on the release is also a +1 on the attestation; voters are asked to check that the project-level answers are still true.
-4. **Sign.** The release manager signs the attestation with their release key, as for the other artifacts. ATR runs `verify`.
-5. **Finish.** When the vote passes, ATR regenerates the attestation with the vote-pass date, stores it in `attestable/`, publishes it next to the release in the dist area, and lists it in the release catalog, which also serves as the foundation-wide index manufacturers search.
-6. **(optional) Countersign.** For opted-in PMCs, ATR applies the foundation countersignature (section 5).
+2. **(new) Attestation.** ATR calls `release` and `generate`, with the pinned ASF baseline and the project's `KEYS`, and shows the attestation next to the candidate. Its `issued` time is when the vote opens, so the document never has to change after the vote. A missing or stale profile answer blocks starting the vote, with a message naming the field.
+3. **(new) Vote on it.** The vote email links the attestation alongside the artifacts and gives the output of `vsa diff`: the SHA-512 of the exact attestation, and every answer that changed since the project's previous release, including any `comment`. A binding +1 on the release is also a +1 on those exact bytes; voters are asked to check that the project-level answers are still true.
+4. **Sign.** The release manager signs the attestation with their release key, as for the other artifacts. ATR runs `verify` and checks that the signed file has the SHA-512 given in the vote.
+5. **Finish.** When the vote passes, ATR publishes the voted attestation unchanged: it stores it in `attestable/`, publishes it next to the release in the dist area, and lists it in the release catalog, which also serves as the foundation-wide index manufacturers search. The vote-pass time is recorded in the catalog. If the attestation must change, it is a new attestation and a new vote.
+6. **(new) Countersign.** ATR applies the foundation countersignature (section 5). A release is not finished until it is countersigned.
 7. **(new) Report.** The PMC Chair includes the `report` summary in the quarterly board report: releases shipped with attestations and any profile fields that changed.
 
 If a vulnerability is later found in an attested release, nothing is re-signed: VM.02 is satisfied by the existing CVE process, and the next release's attestation points to the fix.
 
-Releases still made outside ATR follow the same steps with the CLI run by the release manager, and a scheduled job on an ASF instance picks them up from the dist area for the index. They are not countersigned.
+Releases still made outside ATR follow the same steps with the CLI run by the release manager, and a scheduled job on an ASF instance picks them up from the dist area. That job runs the same countersign checks; an attestation that fails them is listed in the index as not countersigned, which verifiers must treat as not issued by the ASF.
 
 ---
 
-## 5. Optional: foundation-key countersignature
+## 5. Required: foundation-key countersignature
 
-A PMC can choose to have each attestation countersigned with one ASF key, in addition to the release manager's signature. This is opt-in per PMC and never required to release.
+Every attestation, full or minimal, is countersigned with one ASF key, in addition to the release manager's signature. This is required (Shane, 2026-10-21): without it, the only proof of origin is a key the PMC controls, published in a `KEYS` file the PMC can edit, so one insider could replace a published attestation, and a verifier could not tell (see the [threat model](threat-model.md), T2). ATR integration is part of the protection: ATR is the trusted caller that decides how and when `vsa` runs.
 
 **What the countersignature means.** It states that the ASF, as steward, confirms this attestation came out of its release process: the PMC voted, the release manager's signature is valid, the artifacts match the attested digests, and the attestation is well-formed. It does **not** mean the ASF audited the code or independently checked the PMC's answers. That wording is published with the key so nobody reads more into it.
 
@@ -157,26 +159,25 @@ A PMC can choose to have each attestation countersigned with one ASF key, in add
 - Rotated on a fixed schedule (for example every two years) with overlap, and immediately on suspected compromise.
 
 **When ATR countersigns.** ATR's countersign step runs automatically at Finish and signs only if every check passes. Each check is a yes/no test on data ATR already holds:
-1. the PMC has opted in (profile flag set, recorded with the date and a link to the PMC decision);
+1. the attestation's `inputs` start with the pinned ASF baseline, and its SHA-512 matches the one given in the vote;
 2. the release vote passed with at least three binding +1 votes, recorded in ATR;
 3. the release manager's signature on the attestation verifies against the project's `KEYS` file;
 4. every artifact's SHA-512 matches the attestation;
 5. the attestation validates against the VSA-lite schema and the project profile passed its 12-month review rule.
 
-If any check fails, ATR skips the countersignature, logs which check failed, and tells the release manager. The release itself still goes ahead with the release manager's signature alone. Skipped countersignatures are listed in the PMC's `report` output.
+If any check fails, ATR does not countersign, logs which check failed, and tells the release manager; the release cannot finish until the problem is fixed, which may need a new vote. Failed checks are listed in the PMC's `report` output.
 
 **Outputs.** A detached OpenPGP signature (`<name>.attestation.json.asf.asc`) published next to the attestation, and optionally a DSSE-signed in-toto statement recorded in a public transparency log (Rekor or SCITT, both named in the two-tier proposal). The attestation is byte-identical whether or not it is countersigned; only the signature file is added. OpenPGP signatures carry their own timestamp, so the signature bytes differ between runs even though the signed input does not.
 
-**Opting in and out.**
-- A PMC opts in by its normal decision process and sets the flag in its profile; the PMC Chair notes it in the next board report.
-- Opting out takes effect from the next release. Existing countersignatures stay valid.
-- Past releases still in the dist area can be countersigned by request, through the same checks, once the PMC has opted in.
+**Past releases.** Releases still in the dist area from before rollout can be countersigned by request, through the same checks.
+
+**Long-term record.** How the countersignature, the `KEYS` file used and a trusted timestamp are kept so that they can still be checked years later, and whether that record is an ASF-held log or a public transparency log, is an open question for the ASF (threat model, "Open process questions").
 
 **If something goes wrong.**
 - *Wrongly countersigned release* (for example the vote is later found invalid): VP Security publishes a withdrawal notice in the release catalog, and ATR marks that attestation as withdrawn. The key is not revoked.
 - *Key compromise:* Infra revokes the key with the offline certificate, issues a new key, and ATR re-countersigns every attestation still in the dist area with the new key, using the same checks.
 
-**Who owns it.** VP Security owns the policy and the published wording, ASF Infra owns the key, and the Tooling team owns the ATR signing step. Turning the option on for the foundation needs Board approval, since it is a new statement made in the ASF's name.
+**Who owns it.** VP Security owns the policy and the published wording, ASF Infra owns the key, and the Tooling team owns the ATR signing step. It needs Board approval before rollout, since it is a new statement made in the ASF's name.
 
 ---
 
@@ -204,7 +205,7 @@ Six fields in the `attestation` block of `project.json`:
 3. The Chair notes the opt-out, and its reason, in the next board report, so the Board and VP Security can see every opted-out project in one place.
 4. Each release then gets a minimal attestation at the same ATR steps as a full one. Nothing is added to the release manager's work or the vote.
 5. Before `reviewBy`, the PMC re-confirms by updating `decided` and `reviewBy`. If it lapses, ATR blocks starting the next release vote until the PMC either re-confirms or fills in the full profile. This is the same rule as a stale full profile.
-6. The PMC can switch to `full` at any time by answering the remaining profile fields. Minimal attestations cannot be countersigned (section 5).
+6. The PMC can switch to `full` at any time by answering the remaining profile fields. Minimal attestations are countersigned like full ones (section 5); the countersignature says where the document came from, not that the PMC answered every control.
 
 ### What is automatic, and what needs a person
 
@@ -233,12 +234,12 @@ The VSA-lite schema currently allows each control to be `met`, `not_met` or `not
 | Role | Responsibility |
 | --- | --- |
 | ASF (Board, VP Security, VP Legal) | Owns and versions the foundation baseline; is the issuer of record; handles Art. 24 steward duties such as authority cooperation and ENISA/CSIRT notification; owns the countersignature policy |
-| PMC | Maintains the project profile; approves each attestation in the release vote; keeps the attested practices true; decides whether to opt in to countersigning or opt out to a minimal attestation |
+| PMC | Maintains the project profile; approves each attestation in the release vote; keeps the attested practices true; decides whether to opt out to a minimal attestation, and whether AU.02 names the chair or only the role |
 | PMC Chair | Named contact (AU.02); confirms the yearly profile review in a board report |
 | Release manager | Reviews the draft attestation in ATR, includes it in the vote, and signs it |
 | Incubator PMC | Same as a PMC for podling releases |
 | ASF Tooling team | Owns the attestation tool repository and its tests; integrates it into ATR; runs the ATR countersign step |
-| ASF Infra | Holds the countersignature key; hosts the scheduled job for releases made outside ATR |
+| ASF Infra | Holds the countersignature key; hosts the scheduled job for releases made outside ATR, which runs the same countersign checks |
 
 ---
 

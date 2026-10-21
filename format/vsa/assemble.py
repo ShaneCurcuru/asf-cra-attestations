@@ -16,6 +16,7 @@
 # under the License.
 """Assembling an attestation from layered settings, release inputs and the release files."""
 
+import dataclasses
 import datetime
 import json
 import pathlib
@@ -25,16 +26,30 @@ from typing import Final
 
 import vsa.digests as digests
 import vsa.document as document
+import vsa.keyring as keyring
 import vsa.settings as settings
 import vsa.signature as signature
 
+_CONTACT_STYLES: Final[tuple[str, ...]] = ("name", "role")
 _OPT_OUT_FIELDS: Final[tuple[str, ...]] = ("reason", "statement", "decided", "decisionRef", "reviewBy")
+
+
+@dataclasses.dataclass(frozen=True)
+class _Files:
+    """Where the release files are, the KEYS URL to record, and the keys to check signatures with."""
+
+    directory: str
+    keys_uri: str
+    ring: keyring.Keyring | None
 
 
 def attestation(
     layers: Sequence[settings.Layer],
     release: document.Document,
     directory: str,
+    ring: keyring.Keyring | None = None,
+    release_name: str = "release",
+    release_sha512: str | None = None,
 ) -> document.Document:
     """Merge the settings layers, the release inputs and the release files in directory into one attestation.
 
@@ -43,6 +58,11 @@ def attestation(
     control with the same ID, whole, unless an earlier layer requires it (see vsa.settings).
     When the settings opt out, every control that is still unanswered becomes not_assessed.
     The same inputs and files always give the same document.
+
+    When ring is given, every signature must verify against it, so a wrong or copied .asc stops
+    generation. inputs lists the SHA-512 of each layer and of the release file, named
+    release_name: release_sha512 when the caller read it from a file, else that of the release
+    document as vsa writes JSON.
     """
     project = settings.merge(layers)
     keys_uri = project["keysUri"]
@@ -61,29 +81,33 @@ def attestation(
     for key in ("validUntil", "supersedes", "comment"):
         if key in release:
             doc[key] = release[key]
+    if doc["attestationId"] in doc.get("supersedes", []):
+        raise document.InputError("an attestation cannot supersede itself")
     doc["issuer"] = _issuer(project)
     # AU.02 names the PMC chair, as the official representative of the PMC
     # TODO: Ask whether a PMC may optionally name the release manager instead, as the person who ran the build
-    doc["contact"] = project["contact"]
+    doc["contact"] = _contact(project)
+    files = _Files(directory, keys_uri, ring)
     doc["subject"] = {
         "project": project["project"],
         "release": _release(project, release),
-        "artifacts": [_artifact(a, directory, keys_uri) for a in release["artifacts"]],
+        "artifacts": [_artifact(a, files) for a in release["artifacts"]],
     }
-    sboms = [_sbom(s, directory, keys_uri) for s in release.get("sboms", [])]
+    sboms = [_sbom(s, files) for s in release.get("sboms", [])]
     if sboms:
         doc["subject"]["sboms"] = sboms
     doc["controls"] = controls
+    doc["inputs"] = _inputs(layers, release, release_name, release_sha512)
     return doc
 
 
-def _artifact(artifact: document.Document, directory: str, keys_uri: str) -> document.Document:
-    data = _local_file(directory, artifact["uri"])
+def _artifact(artifact: document.Document, files: _Files) -> document.Document:
+    data = _local_file(files.directory, artifact["uri"])
     out = {k: artifact[k] for k in ("id", "name", "role", "official", "uri", "purl") if k in artifact}
     out["size"] = len(data)
     out["digests"] = digests.compute(data)
     if "signatureUri" in artifact:
-        out["signature"] = _signature_block(directory, artifact["signatureUri"], keys_uri)
+        out["signature"] = _signature_block(files, artifact["signatureUri"], data, artifact["id"])
     if "sbomRefs" in artifact:
         out["sbomRefs"] = artifact["sbomRefs"]
     return out
@@ -93,6 +117,19 @@ def _attestation_id(project: document.Document, release: document.Document) -> s
     # The same project, version and issue time always give the same UUID
     seed = f"{project['project']['url']}|{release['version']}|{release['issued']}"
     return f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, seed)}"
+
+
+def _contact(project: document.Document) -> document.Document:
+    # A PMC may publish its chair by role alone, since the name is personal data kept for years
+    style = project.get("attestation", {}).get("contactStyle", "name")
+    if style not in _CONTACT_STYLES:
+        raise document.InputError(f"attestation contactStyle must be name or role, not {style}")
+    contact = dict(project["contact"])
+    if style == "role":
+        contact.pop("name", None)
+    elif "name" not in contact:
+        raise document.InputError("contact has no name, so set attestation contactStyle to role")
+    return contact
 
 
 def _controls(merged: document.Document, minimal: bool) -> document.Document:
@@ -107,6 +144,17 @@ def _controls(merged: document.Document, minimal: bool) -> document.Document:
     if unknown:
         raise document.InputError(f"unknown control IDs: {', '.join(unknown)}")
     return {c: merged[c] for c in document.CONTROL_IDS}
+
+
+def _inputs(
+    layers: Sequence[settings.Layer], release: document.Document, release_name: str, release_sha512: str | None
+) -> list[document.Document]:
+    entries = [
+        {"role": "settings", "name": pathlib.Path(layer.source).name, "sha512": layer.digest()} for layer in layers
+    ]
+    release_digest = release_sha512 or digests.sha512(document.dump(release).encode("utf-8"))
+    entries.append({"role": "release", "name": release_name, "sha512": release_digest})
+    return entries
 
 
 def _issuer(project: document.Document) -> document.Document:
@@ -165,14 +213,14 @@ def _release(project: document.Document, release: document.Document) -> document
     return out
 
 
-def _sbom(sbom: document.Document, directory: str, keys_uri: str) -> document.Document:
-    data = _local_file(directory, sbom["uri"])
+def _sbom(sbom: document.Document, files: _Files) -> document.Document:
+    data = _local_file(files.directory, sbom["uri"])
     out: document.Document = {"id": sbom["id"], "format": sbom["format"]}
     out.update(_sbom_facts(sbom["format"], data))
     out["uri"] = sbom["uri"]
     out["digests"] = digests.compute(data)
     if "signatureUri" in sbom:
-        out["signature"] = _signature_block(directory, sbom["signatureUri"], keys_uri)
+        out["signature"] = _signature_block(files, sbom["signatureUri"], data, sbom["id"])
     return out
 
 
@@ -195,10 +243,9 @@ def _sbom_facts(sbom_format: str, data: bytes) -> document.Document:
     }
 
 
-def _signature_block(directory: str, uri: str, keys_uri: str) -> document.Document:
-    return {
-        "format": "openpgp",
-        "uri": uri,
-        "keyFingerprint": signature.fingerprint(_local_file(directory, uri)),
-        "keysUri": keys_uri,
-    }
+def _signature_block(files: _Files, uri: str, data: bytes, name: str) -> document.Document:
+    armored = _local_file(files.directory, uri)
+    fingerprint = signature.fingerprint(armored)
+    if (files.ring is not None) and (keyring.verify(files.ring, armored, data, name) != fingerprint):
+        raise document.InputError(f"{name}: signature issuer does not match its fingerprint subpacket")
+    return {"format": "openpgp", "uri": uri, "keyFingerprint": fingerprint, "keysUri": files.keys_uri}

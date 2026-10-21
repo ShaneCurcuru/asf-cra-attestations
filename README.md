@@ -36,7 +36,8 @@ code is a proposal for the ASF Tooling team, who would decide where it lives (wo
 
 | Page | What it covers |
 | --- | --- |
-| [Release attestation process](process/asf-attestation-process.md) | Who issues and signs, how ATR uses the tool, the three data layers, the per-release steps, the optional countersignature and PMC opt-out, roles, and open questions |
+| [Release attestation process](process/asf-attestation-process.md) | Who issues and signs, how ATR uses the tool, the three data layers, the per-release steps, the required countersignature and PMC opt-out, roles, and open questions |
+| [Threat model](process/threat-model.md) | Attack vectors and risks (insider release manager, post-release swaps, forged attestations, long-term verification, legal and social risks), mitigations, and open process questions for the ASF |
 | [VSA-lite format](format/README.md) | The JSON format and its design, how a PMC and ATR use the `vsa` package, code conventions, the Commons Lang example, and the issues still to resolve with design |
 | [Collector](format/vsa/collect/README.md) | How `vsa-collect` drafts the input files from public ASF data, where each value comes from, swapping data sources, and results on Tomcat, Commons Lang and httpd |
 | [Implementation plan](tooling/implementation-plan.md) | Repository layout, data sources, per-control resolvers, and milestones M0 to M5 |

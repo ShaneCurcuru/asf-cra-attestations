@@ -109,8 +109,8 @@ being another Tooling app to borrow patterns from.
 | Area | Today in vsa | Recommendation |
 |---|---|---|
 | Project metadata | `project.json` plus Whimsy and projects.apache.org providers | Add an ATR provider (public API) as the first source for the fields `.asf.yaml` already covers; keep `project.json` (one per product) for CRA-only answers |
-| HTTP | stdlib `urllib` with an on-disk fixture cache | Keep. It stays deterministic and dependency-free. When running inside ATR, accept data passed in by ATR instead of fetching |
-| Signature parsing | hand-written packet parsing in `vsa/signature.py` | Fine for reading the issuer fingerprint. For any real verification use `rpgp-py`, as ATR and its client do |
+| HTTP | stdlib `urllib` through `vsa/https.py` (https only, no cross-host redirects, size cap), with an on-disk fixture cache | Keep. It stays deterministic and dependency-free. When running inside ATR, accept data passed in by ATR instead of fetching |
+| Signature parsing | hand-written packet parsing in `vsa/signature.py` for the issuer fingerprint; `vsa/keyring.py` verifies with `rpgp-py` (optional `openpgp` extra, minor version pinned since its API is not stable) | Done (2026-10-21): verification uses `rpgp-py`, as ATR and its client do |
 | JSON output | `json.dumps(indent=2)` | Fine for display. Anything we hash or sign must be `rfc8785` canonical JSON, as in ATR's `sealing.py` |
 | YAML (if added) | none | `strictyaml`, never PyYAML, matching ATR, asfyaml and the client |
 | CLI | `argparse` | Keep. ATR's own scripts use `argparse`; `cyclopts` only if we grow a client-style CLI |

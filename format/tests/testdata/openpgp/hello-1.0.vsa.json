@@ -1,0 +1,254 @@
+{
+  "schemaVersion": "0.4.0",
+  "template": {
+    "id": "orcwg-vsa-lite",
+    "version": "0.1",
+    "uri": "https://github.com/orcwg/cra-attestations/blob/main/proposals/template-lite.md",
+    "basis": "BSI TR-03185-2"
+  },
+  "attestationId": "urn:uuid:1158c997-0498-59fd-8b54-8a08e1673a4d",
+  "scope": "full",
+  "issued": "2026-10-21T00:00:00Z",
+  "issuer": {
+    "name": "The Apache Software Foundation",
+    "registeredAddress": "1000 N West Street, Suite 1200, Wilmington, DE 19801, U.S.A.",
+    "website": "https://www.apache.org/",
+    "role": "steward",
+    "relationship": "Apache Commons Lang is governed by the Apache Commons PMC, a committee of the ASF Board. Releases are approved by PMC vote under ASF release policy."
+  },
+  "contact": {
+    "name": "Example PMC Chair",
+    "role": "Vice President, Apache Commons (PMC Chair)",
+    "email": "private@commons.apache.org"
+  },
+  "subject": {
+    "project": {
+      "name": "Apache Commons Lang",
+      "url": "https://commons.apache.org/proper/commons-lang/",
+      "purl": "pkg:maven/org.apache.commons/commons-lang3"
+    },
+    "release": {
+      "version": "1.0",
+      "vcs": {
+        "type": "git",
+        "url": "https://gitbox.apache.org/repos/asf/commons-lang.git",
+        "tag": "rel/hello-1.0",
+        "commit": "0123456789abcdef0123456789abcdef01234567"
+      }
+    },
+    "artifacts": [
+      {
+        "id": "src",
+        "name": "hello.txt",
+        "role": "source",
+        "official": true,
+        "uri": "https://downloads.apache.org/commons/hello.txt",
+        "size": 37,
+        "digests": {
+          "sha512": "44a18767449ff6aa14e030a8b3a3e216fa936eac5ffc312b130df89d7584a7c3fd2f2daa6e79f199a10c761754f25dee5365a306a34f5c0dea280ef88f594706"
+        },
+        "signature": {
+          "format": "openpgp",
+          "uri": "https://downloads.apache.org/commons/hello.txt.asc",
+          "keyFingerprint": "7B23B639DCB3700E06FAF0A8F748597F1BD8FFFD",
+          "keysUri": "https://downloads.apache.org/commons/KEYS"
+        }
+      }
+    ],
+    "sboms": [
+      {
+        "id": "sbom-cdx",
+        "format": "CycloneDX",
+        "specVersion": "1.5",
+        "mediaType": "application/vnd.cyclonedx+json",
+        "serialNumber": "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
+        "uri": "https://downloads.apache.org/commons/hello.cdx.json",
+        "digests": {
+          "sha512": "0c2830f11105380eb4d2f392d08ec127477e7bf40eac29cfed779521016dc093ed7adebaf09c4d22ddbea16afb5b0658a5c95e8a84b52c6b14ad6f057f60a0c6"
+        }
+      }
+    ]
+  },
+  "controls": {
+    "GV.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/CONTRIBUTING.md"
+        }
+      ]
+    },
+    "GV.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/CONTRIBUTING.md",
+          "description": "Requires tests, checkstyle-clean code and a passing 'mvn clean verify' for every contribution."
+        }
+      ]
+    },
+    "GV.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/proper/commons-lang/userguide.html"
+        }
+      ]
+    },
+    "LE.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/LICENSE.txt",
+          "description": "Apache License 2.0"
+        }
+      ]
+    },
+    "LE.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/legal/resolved.html",
+          "description": "ASF third-party licensing policy applies to every release."
+        }
+      ]
+    },
+    "QA.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "ref": "sbom-cdx",
+          "description": "CycloneDX SBOM for the binary jar, with component hashes."
+        }
+      ]
+    },
+    "QA.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://gitbox.apache.org/repos/asf/commons-lang.git"
+        },
+        {
+          "uri": "https://github.com/apache/commons-lang"
+        }
+      ]
+    },
+    "QA.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/security.html"
+        },
+        {
+          "uri": "https://www.apache.org/security/"
+        }
+      ]
+    },
+    "QA.04": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/CONTRIBUTING.md",
+          "description": "Test suite runs with 'mvn clean verify'; also run in GitHub Actions on every push."
+        }
+      ]
+    },
+    "QA.05": {
+      "status": "not_applicable",
+      "explanation": "Written only in Java, a memory-safe language running on the JVM; no code in non-memory-safe languages."
+    },
+    "QA.06": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://commons.apache.org/proper/commons-lang/team.html"
+        }
+      ]
+    },
+    "QA.07": {
+      "status": "partial",
+      "explanation": "Apache Commons operates commit-then-review (CTR): committers may commit directly, and every commit is posted to commits@commons.apache.org for after-the-fact review by other committers. Pull requests from non-committers are reviewed before merge."
+    },
+    "BR.01": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/CONTRIBUTING.md"
+        }
+      ]
+    },
+    "BR.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://archive.apache.org/dist/commons/lang/",
+          "description": "Complete release history."
+        }
+      ]
+    },
+    "BR.03": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/info/verification.html"
+        },
+        {
+          "uri": "https://downloads.apache.org/commons/KEYS"
+        }
+      ]
+    },
+    "BR.04": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://github.com/apache/commons-lang/blob/rel/commons-lang-3.17.0/RELEASE-NOTES.txt"
+        }
+      ]
+    },
+    "VM.01": {
+      "status": "met",
+      "contact": "mailto:security@apache.org",
+      "privateReportingUri": "https://www.apache.org/security/",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/security/"
+        }
+      ]
+    },
+    "VM.02": {
+      "status": "met",
+      "evidence": [
+        {
+          "uri": "https://www.apache.org/security/committers.html",
+          "description": "ASF vulnerability handling process: CVE assignment, coordinated disclosure, public announcement."
+        }
+      ]
+    },
+    "EL.01": {
+      "status": "not_met",
+      "explanation": "Project-level retirement is announced through the Apache Attic, but Commons Lang does not publish a per-version support or end-of-life policy."
+    }
+  },
+  "inputs": [
+    {
+      "role": "settings",
+      "name": "asf.json",
+      "sha512": "dad6e33b11d78c6b44bb0228341f31febfc02352566c8b797bd66719ebc2428ef6b3f9e95a0505b090ee5b388df8724105c5dafee0c6f0b9a539b471d22630df"
+    },
+    {
+      "role": "settings",
+      "name": "java.json",
+      "sha512": "c56a1a319868b900c1410a1c2c9066c52616f002b57bd3fcd91e0b4adaf1b328c1015ff64ca55ee5fc42a6504613dd886679fd177de1f2695862dfc414e43d51"
+    },
+    {
+      "role": "settings",
+      "name": "project.json",
+      "sha512": "5138a720055754d3a0dcc9090bc01c2600aaa7a5c20c7617ae5f6a3aa63eb9907b5973b6e35c2de26e92fc7ff5d78f3b6613da93157c42a329ff3b2640bbe270"
+    },
+    {
+      "role": "release",
+      "name": "release-1.0.json",
+      "sha512": "3c259135d0d54bdccbd9a66fa95479094e504dcc112d678fe6422c0a4254ec8359245c625ad551c855ba47febd1d4ddd3179f4ee106dfdfa67c07014e64b36b2"
+    }
+  ]
+}

@@ -1,11 +1,12 @@
-# VSA-lite: machine-readable Tier 1 attestation format (draft 0.3.0)
+# VSA-lite: machine-readable Tier 1 attestation format (draft 0.4.0)
 
 A JSON Schema for the ORC WG light-weight Voluntary Security Attestation checklist
 ([`proposals/template-lite.md`](https://github.com/orcwg/cra-attestations/blob/main/proposals/template-lite.md) v0.1,
 derived from BSI TR-03185-2), designed so the ASF can issue one per release for every PMC.
 
 Everything here is plain, deterministic Python and JSON: no AI, no service, and no network
-access at generation time. It needs Python 3.14 and the `jsonschema` package.
+access at generation time. It needs Python 3.14 and the `jsonschema` package; checking OpenPGP
+signatures also needs `rpgp-py`, the library ATR uses (the `openpgp` extra).
 
 This folder is laid out as a standalone repository for the ASF Tooling team to own. PMCs run its
 `vsa` command, and Apache Trusted Releases (ATR) can import it as a library. A name in ATR's
@@ -26,8 +27,10 @@ pattern would be `apache/tooling-cra-attestations`.
 | [scripts/models_generate.py](scripts/models_generate.py) | Regenerates `vsa/models.py`, or checks it with `--check` |
 | [vsa/collect/](vsa/collect/README.md) | The collector (`vsa-collect`): drafts `project.json` and `release-X.json` from public ASF data |
 | [vsa/settings.py](vsa/settings.py) | Loads a settings file and its chain of parents, merges them, and enforces required fields |
-| [vsa/](vsa/) | Python package: `assemble`, `settings`, `document`, `digests`, `signature`, `intoto`, and `cli` (the `vsa` command) |
-| [tests/](tests/) | pytest unit tests |
+| [vsa/keyring.py](vsa/keyring.py), [vsa/verify.py](vsa/verify.py) | OpenPGP signature checks against a KEYS file, and `vsa verify`'s digest, signature and mirror logic |
+| [vsa/diff.py](vsa/diff.py) | What changed between two attestations, for the release vote email |
+| [vsa/](vsa/) | Python package: `assemble`, `settings`, `document`, `digests`, `signature`, `keyring`, `verify`, `https`, `diff`, `intoto`, and `cli` (the `vsa` command) |
+| [tests/](tests/) | pytest unit tests; [tests/testdata/openpgp/](tests/testdata/openpgp/README.md) holds test-only keys and a signed test release |
 | [pyproject.toml](pyproject.toml) | Package metadata, the `vsa` entry point, and ruff, pyright and pytest settings |
 
 ## Code conventions
@@ -59,8 +62,14 @@ import vsa.document as document
 import vsa.intoto as intoto
 import vsa.settings as settings
 
+import vsa.keyring as keyring
+
 layers = settings.chain(project_path, include=[baseline_dir])  # project.json and its parents, root first
-doc = assemble.attestation(layers, release, release_dir)
+settings.check_root(layers, [asf_baseline_sha512])  # the chain must start at the published ASF baseline
+ring = keyring.load(keys_text, keys_url)  # the project's KEYS; every .asc must verify against it
+doc = assemble.attestation(
+    layers, release, release_dir, ring=ring, release_name="release-1.0.json", release_sha512=release_digest
+)
 errors = document.check(doc)
 statement = intoto.wrap(doc)
 ```
@@ -68,8 +77,12 @@ statement = intoto.wrap(doc)
 If ATR keeps the settings in its own storage rather than in files, it can pass the documents in,
 root first, as `settings.Layer(name, doc)`; the required fields are enforced either way.
 
-Every function is synchronous and only reads local files. `digests.verify` is the one call that
-can download, and only when it is not given a local directory.
+Every function is synchronous and only reads local files. `verify.files` and `verify.fetch` are the
+only calls that can download, and only for files not in the local directory they are given.
+
+Without `check_root`, the `required` fields bind only the files below the file that requires them,
+so a project file could name its own copy of `asf.json`, placed next to it, that requires nothing.
+ATR should always pass the ASF baseline's SHA-512 (see the [threat model](../process/threat-model.md), T3).
 
 ## Typed models for ATR
 
@@ -106,10 +119,14 @@ round-trip through the models unchanged. PMCs who only run the `vsa` command don
 3. Each PMC keeps a `project.json` (for example in its repo) with its contact and its answers, and a
    `parent` naming `asf.json` or a community baseline.
 4. At release time the release manager writes a short `release-X.json` naming the files, then runs
-   `vsa generate project.json ...` against the directory they already have the signed artifacts in (for example
-   their `dist/dev` checkout). The tool hashes every file, reads the key fingerprint out of each
-   `.asc`, reads the SBOM serial number, merges the answers, validates the result, and fails if any
-   of the 19 controls has no answer.
+   `vsa generate project.json ... --root-sha512 HEX --keys KEYS` against the directory they already
+   have the signed artifacts in (for example their `dist/dev` checkout). The tool checks that the
+   settings start at the published ASF baseline, hashes every file, checks each `.asc` against the
+   project's KEYS and reads its key fingerprint, reads the SBOM serial number, merges the answers,
+   records the SHA-512 of every input file, validates the result, and fails if any of the 19
+   controls has no answer.
+5. `vsa diff previous.vsa.json new.vsa.json` prints the SHA-512 of the new attestation and every
+   answer that changed, for the vote email, so voters approve exact bytes.
 
 The same inputs always produce byte-identical output; `attestationId` is a UUIDv5 of project URL,
 version and issue time, not a random value.
@@ -199,6 +216,25 @@ be a new schema with its own `template.id` and additional control IDs, plus `pro
 for them. The only code that names specific controls is the QA.01 SBOM check and the collector's
 per-control resolvers, which a heavy template would extend with new entries.
 
+**Inputs are recorded.** `inputs` lists each settings file, root first, and the release file,
+with the SHA-512 of its bytes, so an auditor can tell exactly which baseline and answers an
+attestation came from. When ATR passes documents rather than files, the digest is of the document
+as `vsa` writes JSON.
+
+**AU.02 can name the chair or only the role.** `attestation.contactStyle` in the settings is
+`name` (the default, which publishes `contact.name`) or `role`, which leaves the name out and keeps
+the role and list address. The name is personal data kept for years; VP Legal should choose the
+default (see the [threat model](../process/threat-model.md)).
+
+**Signatures are checked against keys the verifier chose.** Anyone can write an attestation, so
+`vsa verify` never takes keys from wherever the document says. It uses `--keys FILE`, or else
+downloads each `keysUri` only when it starts with a trusted prefix (downloads.apache.org,
+archive.apache.org/dist, dist.apache.org/repos/dist/release, or `--trust-prefix`). It checks every
+artifact and SBOM signature, that each signer's fingerprint is the one recorded, and with
+`--signature` the detached signature over the attestation itself. Files that have moved from
+downloads.apache.org are fetched from archive.apache.org (or a `--mirror OLD=NEW`) and accepted by
+digest. Downloads never follow a redirect to http or another host, and stop at 2 GiB.
+
 **Signing is outside the document.** The JSON is the payload. `vsa intoto` wraps it
 as an in-toto v1 Statement whose `subject` is the artifact digest list, so the ASF can sign
 it with DSSE/Sigstore and log it in Rekor or a SCITT ledger (both named in the two-tier
@@ -228,9 +264,10 @@ pip install .        # or: uv sync; add [models] for the pydantic models
 vsa generate examples/commons-lang3/project.json \
     examples/commons-lang3/release-3.17.0.json DIR_WITH_RELEASE_FILES -o out.vsa.json
 vsa validate examples/commons-lang3/commons-lang3-3.17.0.vsa.json
-vsa verify   examples/commons-lang3/commons-lang3-3.17.0.vsa.json  # downloads ~1.9 MB
+vsa verify   examples/commons-lang3/commons-lang3-3.17.0.vsa.json  # downloads ~1.9 MB and the Commons KEYS
 vsa intoto   examples/commons-lang3/commons-lang3-3.17.0.vsa.json
-pytest
+vsa diff     OLD.vsa.json NEW.vsa.json
+uv run --extra models --extra openpgp --group test pytest
 uv run --group codegen python scripts/models_generate.py --check
 ruff check . && ruff format --check . && pyright
 ```
@@ -245,12 +282,20 @@ community baseline that changes the issuer is rejected, and one root file with n
 same attestation as the chain. `tests/test_settings.py` covers parents found through `-I`, parent
 loops, one-level merging, unchanged and partly locked values, every change to a required field
 being reported, and malformed `required` lists. The full suite, including the models tests and the
-collector, passes under pytest (61 passed, 1 skipped). `uv build` produced a wheel that includes the schema, and the installed `vsa`
+collector, passes under pytest (77 passed). `tests/test_verify.py` covers signature checks with
+test-only keys (a signing subkey, a key not in KEYS, a tampered file, a copied `.asc`), a forged
+`keysUri`, the shadow-baseline attack, `inputs`, in-toto subject checks, the archive fallback,
+`vsa diff`, the role-only contact, and self-supersede and long `comment` refusals. `uv build` produced a wheel that includes the schema, and the installed `vsa`
 command validated the example. Python 3.14 is not installed in my sandbox, so the code ran on 3.13 and
 pyright type-checked it against 3.14.
 
 ## Changes
 
+- **0.4.0:** added `inputs` (the SHA-512 of each settings file and the release file), made
+  `contact.name` optional (for `attestation.contactStyle: role`), and capped `comment` at 500
+  characters. The tool now checks OpenPGP signatures (`vsa verify`, `vsa generate --keys`), pins the
+  settings root (`--root-sha512`), refuses a self-superseding attestation, falls back to the archive
+  by digest, and has `vsa diff`. All follow the [threat model](../process/threat-model.md).
 - **Tool, unreleased:** settings are layered through `parent` links instead of a fixed
   `asf.json` root plus `-c` community files, and any layer can mark fields `required`.
   `vsa generate` now takes `SETTINGS RELEASE DIR [-I DIR]...`, and `assemble.attestation` takes the
@@ -286,6 +331,8 @@ pyright type-checked it against 3.14.
    - Make contact.email required, and always a role address (private@project.a.o?).
    - Add ASF contact to AU.01 for authority requests, a role alias owned by VP Legal or VP Security.
    - Keep a stable apache.org page that maps any past attestation to its current chair.
+   *Decided (Shane, 2026-10-21):* a PMC chooses whether AU.02 publishes the chair's name or only
+   the role (`attestation.contactStyle`). VP Legal to say which should be the default.
 4. **Several products per PMC.** Some PMCs ship products with different languages, dependencies
    or security backgrounds, so one `project.json` per PMC is not enough. A PMC may keep several
    answer files (for example `product1.json`, `product2.json`). Product files can share PMC-wide
@@ -304,8 +351,8 @@ pyright type-checked it against 3.14.
 ## Open questions
 
 1. **`$id` and `predicateType` are beta apache.org identifiers.** They are
-   `https://tooling.apache.org/cra/vsa-lite/0.3.0/vsa-lite.schema.json` and
-   `https://tooling.apache.org/cra/vsa-lite/v0.3`, under the Tooling team that will own the repository.
+   `https://tooling.apache.org/cra/vsa-lite/0.4.0/vsa-lite.schema.json` and
+   `https://tooling.apache.org/cra/vsa-lite/v0.4`, under the Tooling team that will own the repository.
    They are identifiers only. Nothing is served there yet, and the Tooling team should confirm the path
    before a signed attestation leaves beta.
 2. **SBOM for source releases.** Commons publishes SBOMs for the jar only. QA.01 is about

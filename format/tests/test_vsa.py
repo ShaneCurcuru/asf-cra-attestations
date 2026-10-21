@@ -60,7 +60,7 @@ def test_attestation_is_deterministic_and_matches_example(tmp_path: pathlib.Path
     assert first == second
     doc = json.loads(first)
     assert document.check(doc) == []
-    for key in ("attestationId", "issuer", "contact", "controls"):
+    for key in ("attestationId", "issuer", "contact", "controls", "inputs"):
         assert doc[key] == _GOOD[key]
 
 
@@ -89,9 +89,12 @@ def test_attestation_from_one_file_without_parent(tmp_path: pathlib.Path) -> Non
     _write_stand_in_files(release, tmp_path)
     root = tmp_path / "root.json"
     root.write_text(document.dump(settings.merge(settings.chain(_EXAMPLE_DIR / "project.json"))))
-    assert document.dump(assemble.attestation(settings.chain(root), release, str(tmp_path))) == document.dump(
-        _generate(release, tmp_path)
-    )
+    from_root = assemble.attestation(settings.chain(root), release, str(tmp_path))
+    from_chain = _generate(release, tmp_path)
+    # Only the record of which input files were used differs
+    assert [i["name"] for i in from_root.pop("inputs")] == ["root.json", "release"]
+    from_chain.pop("inputs")
+    assert document.dump(from_root) == document.dump(from_chain)
 
 
 def test_attestation_minimal_marks_unanswered_not_assessed(tmp_path: pathlib.Path) -> None:
@@ -145,10 +148,16 @@ def test_fingerprint_reads_issuer() -> None:
     assert fingerprint == "2DB4F1EF0FA761ECC4EA935C86FDC7E2A11262CB"
 
 
+def test_fingerprint_reports_malformed_armor() -> None:
+    with pytest.raises(document.InputError, match="malformed"):
+        signature.fingerprint(b"-----BEGIN PGP SIGNATURE-----\n")
+
+
 def _generate(
     release: document.Document, directory: pathlib.Path, project_file: str = "project.json"
 ) -> document.Document:
-    return assemble.attestation(settings.chain(_EXAMPLE_DIR / project_file), release, str(directory))
+    layers = settings.chain(_EXAMPLE_DIR / project_file)
+    return assemble.attestation(layers, release, str(directory), release_name="release-3.17.0.json")
 
 
 def _write_stand_in_files(release: document.Document, directory: pathlib.Path) -> None:
