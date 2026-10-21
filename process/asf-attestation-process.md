@@ -107,7 +107,7 @@ Stored as `project.json`, either in ATR's project settings or in the project's m
 | QA.07 | Review model: review-then-commit, or commit-then-review with post-commit review | Manual; varies by PMC and must be stated honestly |
 | BR.01 | Build-from-source docs | Manual |
 | EL.01 (versions) | Which release lines are supported and how end of support is announced | ATR lifecycle (CLE) dates where the PMC has set them; otherwise Manual |
-| AU.02 contact style | `name` to publish the chair's name, or `role` to publish only the role and private@ list (`attestation.contactStyle`) | Manual; VP Legal to choose the default |
+| AU.02 contact style | `name` to publish the chair's name, or `role` to publish only the role and private@ list (`attestation.contactStyle`) | Manual; default `name` until VP Legal chooses (open question 6) |
 | Attestation mode | `full`, or `minimal` if the PMC has opted out (section 6) | Manual |
 
 Podlings fill the same profile, with the Incubator PMC as approving body and the Incubator disclaimer noted.
@@ -131,7 +131,7 @@ Podlings fill the same profile, with the Incubator PMC as approving body and the
 This follows the ATR release flow; only the steps marked **new** are additions for PMCs.
 
 1. **Compose the release candidate in ATR** as today. ATR runs its signature, checksum, licence and SBOM checks.
-2. **(new) Attestation.** ATR calls `release` and `generate`, with the pinned ASF baseline and the project's `KEYS`, and shows the attestation next to the candidate. Its `issued` time is when the vote opens, so the document never has to change after the vote. A missing or stale profile answer blocks starting the vote, with a message naming the field.
+2. **(new) Attestation.** ATR calls `release` and `generate`, with the pinned ASF baseline and the project's `KEYS`, and shows the attestation next to the candidate. Its `issued` time is when the vote opens, so the document never has to change after the vote (open question 7). A missing or stale profile answer blocks starting the vote, with a message naming the field.
 3. **(new) Vote on it.** The vote email links the attestation alongside the artifacts and gives the output of `vsa diff`: the SHA-512 of the exact attestation, and every answer that changed since the project's previous release, including any `comment`. A binding +1 on the release is also a +1 on those exact bytes; voters are asked to check that the project-level answers are still true.
 4. **Sign.** The release manager signs the attestation with their release key, as for the other artifacts. ATR runs `verify` and checks that the signed file has the SHA-512 given in the vote.
 5. **Finish.** When the vote passes, ATR publishes the voted attestation unchanged: it stores it in `attestable/`, publishes it next to the release in the dist area, and lists it in the release catalog, which also serves as the foundation-wide index manufacturers search. The vote-pass time is recorded in the catalog. If the attestation must change, it is a new attestation and a new vote.
@@ -258,3 +258,5 @@ The VSA-lite schema currently allows each control to be `met`, `not_met` or `not
 3. Which internal ASF data (security team records, CNA data) needs to be exposed to complete VM.01/VM.02 accurately? This is the "internal data" question from the research README.
 4. What should the tool repository be called, and is dev@tooling.apache.org the right place to propose it and the ATR integration?
 5. Should the Board or VP Security be able to refuse a PMC's opt-out, for example for a project that is widely used commercially, or is the board-report notice enough?
+6. Should AU.02 publish the chair's name or only the role and private@ list by default? The tool defaults to the name (`attestation.contactStyle`), and each PMC can choose; VP Legal should confirm the default (threat model, "Open process questions", item 6).
+7. Should `issued` be the time the vote opens (the current rule, so voters approve the exact bytes) or the time the vote passes or the release is published? See the threat model, "Open process questions", item 7.

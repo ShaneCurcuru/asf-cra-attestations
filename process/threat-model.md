@@ -59,8 +59,17 @@ Board to answer. Shane coordinates them on dev@tooling.apache.org.
    adds an outside dependency. This needs other human input.
 5. **How long must attestations stay verifiable?** The CRA's support-period rules set the minimum. The answer
    fixes how long countersign keys, `KEYS` snapshots, timestamps and the log must be kept.
-6. **Does AU.02 need the chair's name at all?** The tool now lets a PMC choose the chair's name or only the
-   role (`attestation.contactStyle`); VP Legal should say which should be the default.
+6. **What should AU.02 publish by default: the chair's name, or only the role?** The tool lets each PMC choose
+   (`attestation.contactStyle`: `name` or `role`) and defaults to `name`. A name is clearer for a market
+   surveillance authority today, but it goes stale when the chair changes and puts a person's name in a
+   long-lived legal record. The role and private@ list stay correct for the life of the attestation. VP Legal
+   should say which is the default, and whether a PMC may override it.
+7. **Which time should `issued` record?** The process now fixes `issued` when the vote opens, so the PMC votes
+   on the exact bytes that are published and nothing changes after the vote. The alternative is the time the
+   vote passes or the release is published, which matches when the ASF actually makes the statement, but means
+   the attestation is regenerated after the vote and voters never see the final document. Because `issued` is
+   part of the attestation ID, the choice also decides when the ID is known. The ASF should confirm which time
+   carries legal meaning under the CRA.
 
 ## Scope, assets and trust boundaries
 
