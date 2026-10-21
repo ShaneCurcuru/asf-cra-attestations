@@ -1,6 +1,6 @@
 {
   "name": "asf",
-  "description": "Root settings for every ASF PMC: the issuer, the template, and the answers set by Foundation policy. It has no parent. Project and community files name it as their parent and may replace any control here, except the fields listed under required. PROPOSED required list, not yet agreed.",
+  "description": "Root settings for every ASF PMC: the issuer, the template, and the answers set by Foundation policy. It has no parent. Project and community files name it as their parent and may replace any control here, except the fields listed under required.",
   "required": [
     "/template",
     "/issuer",

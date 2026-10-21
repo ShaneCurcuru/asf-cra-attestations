@@ -188,8 +188,8 @@ How the layers merge:
   `vsa generate` reports every violation in every file at once.
 
 `baseline/community/java.json` only shows the mechanism, using QA.05, and the Commons Lang example
-inherits its QA.05 answer from it. The required list in `baseline/asf.json` is a proposal; see
-"Issues to resolve with design".
+inherits its QA.05 answer from it. Why `baseline/asf.json` requires what it does is in "Issues to
+resolve with design", item 1.
 
 **Built for the light template, ready for a heavy one.** The work targets the Tier 1 light
 template. If a Tier 2 heavy template is needed later, it can be added without reworking the tool:
@@ -265,7 +265,7 @@ pyright type-checked it against 3.14.
 
 1. **Which answers belong in the ASF baseline, and which are required.** The draft baseline covers
    LE.02, QA.03, BR.03, VM.01 and VM.02. Legal and Security would need to agree to own those answers
-   for every PMC. *Proposed, awaiting Shane's confirmation:* the baseline requires `/template` and
+   for every PMC. *Decided (Shane, 2026-10-21):* the baseline requires `/template` and
    `/issuer` (the ASF is always the issuer, of one template), `/controls/LE.02` and
    `/controls/VM.02` whole (Foundation licensing and vulnerability-handling policy, with nothing
    project-specific to add), and only the `status` of QA.03, BR.03 and VM.01, so that no PMC can

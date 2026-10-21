@@ -86,7 +86,7 @@ Stored as `baseline/asf.json` in the tool repository, versioned and released wit
 
 Each attestation cites the baseline version it relies on instead of repeating it.
 
-The baseline is the root of a chain of settings files. Each file may name a `parent`, which is loaded first, so a project's `project.json` names `asf.json` (or a community baseline whose own parent is `asf.json`), and a PMC with several products can add a PMC-wide file in between. The baseline also lists `required` fields, which no file below it may change: proposed are the issuer and template, LE.02 and VM.02 whole, and the status of QA.03, BR.03 and VM.01 (see the format README, "Issues to resolve with design"). Without `required`, a lower file can replace any answer. Nothing in the tool assumes `asf.json` is the root, so another steward can set up its own hierarchy.
+The baseline is the root of a chain of settings files. Each file may name a `parent`, which is loaded first, so a project's `project.json` names `asf.json` (or a community baseline whose own parent is `asf.json`), and a PMC with several products can add a PMC-wide file in between. The baseline also lists `required` fields, which no file below it may change: the issuer and template, LE.02 and VM.02 whole, and the status of QA.03, BR.03 and VM.01 (see the format README, "Issues to resolve with design"). Without `required`, a lower file can replace any answer. Nothing in the tool assumes `asf.json` is the root, so another steward can set up its own hierarchy.
 
 ### Layer B: Project profile (maintained by each PMC, reviewed yearly)
 
